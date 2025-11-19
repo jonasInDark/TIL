@@ -35,3 +35,17 @@ today-i-learned
   같은 클래스 내 동일한 이름의 메소드는 매개변수를 달리하여 정의할 수 있다.
 
 </details>
+
+### Day 3
+<details>
+<summary>observer pattern(1)</summary>
+
+- `Observer Pattern` `subject` 의 상태를 지속적으로 `observer` 가 필요로 할 때 사용하는 디자인 패턴이며, one-to-many 관계이다.  
+여기서 `observer` 는 여러 개 일 수 있다.
+- 서로 의존하는 형태이므로 강한 결합(`coupling`) 구조를 지닌다.  
+이는 유연성을 떨어뜨리므로 약한 결합(`loose coupling`)을 위해 `interface` 를 정의하여 추상화를 해야 한다.  
+
+### Todo
+- [ ] `PropertyChangeListner` 알아보기
+
+</details>

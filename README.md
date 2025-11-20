@@ -45,7 +45,19 @@ today-i-learned
 - 서로 의존하는 형태이므로 강한 결합(`coupling`) 구조를 지닌다.  
 이는 유연성을 떨어뜨리므로 약한 결합(`loose coupling`)을 위해 `interface` 를 정의하여 추상화를 해야 한다.  
 
-### Todo
-- [ ] `PropertyChangeListner` 알아보기
+</details>
+
+### Day 4
+<details>
+<summary>observer pattern(2)</summary>
+
+- `subject`의 상태가 변할 때 `observer` 에게 값을 보내는 방식을 `push`, `observer` 가 필요할 때마다 값을 요청하는 방식을 `pull` 이라 한다.
+- 보통 `pull` 을 권장한다.  
+- `subject` 의 상태가 변할 때 `update` 에 값을 넣는 방식은 향후 수집하는 데이터가 증가할 때마다 observer 의 interface 를 수정해야 하기에  
+notify 를 통해 알리고 각 observer 들이 필요한 값을 가져가는 방식이 추후 확장하는데 좋다.
+
+### Done
+- [x] `PropertyChangeListner` 는 `observer` 에 해당한다.  
+`propertyChange` 가 호출되며 parameter 로 전달되는 `PropertyChangeEvent` 에 변경된 속성의 이름과 oldValue, newValue 가 담겨있다.
 
 </details>

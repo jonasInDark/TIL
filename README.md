@@ -61,3 +61,15 @@ notify 를 통해 알리고 각 observer 들이 필요한 값을 가져가는 �
 `propertyChange` 가 호출되며 parameter 로 전달되는 `PropertyChangeEvent` 에 변경된 속성의 이름과 oldValue, newValue 가 담겨있다.
 
 </details>
+
+### Day 5
+<details>
+<summary>decorator pattern(1)</summary>
+
+- `decorator pattern` 객체에 기능을 추가하고 싶을 때 적절한 패턴이다.  
+- `OCP(Open-Closed Principle)` 확장에는 열려있고 수정에는 닫혀 있는 원리.  
+수정할 부분이 많다는 것은 확장 시에도 수정할 부분이 많다는 것이다.  
+확장할 부분을 선택하는 것은 신중하게 해야 한다.  
+그렇지 않으면 괜히 쓸데없는 일을 하는 것이며 오히려 복잡한 코드를 만들 수 있다.
+
+</details>

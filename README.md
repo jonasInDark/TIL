@@ -97,3 +97,18 @@ notify 를 통해 알리고 각 observer 들이 필요한 값을 가져가는 �
 - 피자의 종류가 늘어난다면 피자 만드는 부분을 수정하면 되므로 복잡하지 않다.
 
 </details>
+
+### Day 7
+<details>
+<summary>factory pattern(2)</summary>
+
+- `Dependency Inversion Principle` 의존성 역전 원칙은 concrete 이 아닌 abstract 에 의존해야 한다 를 의미한다.  
+예를 들어 게시판을 만든다고 하자.  
+DB 에 접근하여 게시글을 가져와 화면에 보여준다.  
+이 과정을 고수준 모듈이라 하면 DB 에 접근하는 것을 저수준 모듈이라 한다.  
+이때 DB 가 MySQL 이라면 관련 connector 를 만들어 query 를 보내고 데이터를 가져올 것이다.  
+이 과정이 너무 구체적(concrete) 하여 만약 다른 DB 로 바꿔야 한다면 수정을 해야 한다.  
+DB 에 연결하여 query 를 보내는 것을 추상화한다면 고수준 모듈은 이 인터페이스를 사용하면 되고 저수준에서는 구현하면 된다.  
+즉, 상위 모듈은 어떤 DB 를 사용하는지 상관이 없어져 의존성이 줄어든다.
+
+</details>

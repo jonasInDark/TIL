@@ -112,3 +112,47 @@ DB 에 연결하여 query 를 보내는 것을 추상화한다면 고수준 모�
 즉, 상위 모듈은 어떤 DB 를 사용하는지 상관이 없어져 의존성이 줄어든다.
 
 </details>
+
+### Day 8
+<details>
+<summary>factory pattern(3)</summary>
+
+- `Dependency Inversion Principle` 에 관한 조언
+  1. 변수 타입을 `concrete` 가 아닌 `abstract` 를 사용하라.
+  ```java
+  MySQLConnector connector = new MySQLConnector(); // not good
+  AbstractConnector connector = new MySQLConnector(); // recommended
+  ```
+  2. `concrete` 를 상속하여 확장하지 말자.
+  ```java
+   class SpecialFileLogger extends FileLogger {} // FileLogger 의 구체적인 방식을 사용하게 되어 여전히 의존성이 높다.
+   class SpecialFileLogger extends AbstractLogger {} // AbstractLogger 의 추상 메소드를 구현하여 의존성을 줄일 수 있다.
+  ```
+  3. base class 에 구현된 메소드를 오버라이딩하지 말자.  
+  이미 구현된 메소드를 오버라이딩하는 것은 base class 가 제대로 추상화 되지 않았다는 것이다.  
+  모든 하위 클래스에서 사용할 수 있는 것만 정의하자.
+- `factory method pattern`  
+클라이언트는 객체를 생성할 때 concrete 가 아닌 abstract 를 사용하여 유연성을 높일 수 있다.  
+이 객체를 생성하는 팩토리 클래스의 메소드를 하위 클래스에서 구현하면 클라이언트를 수정하지 않아도 된다.  
+즉, 하위 클래스에 따라 타입이 결정되므로 쉽게 확장할 수 있다.
+- `abstract factory pattern`  
+서로 연관있는 객체들의 `집합(family)`을 추상화한다.  
+```java
+interface IngredientFactory {
+    void cheese();
+    void dough();
+    // ...
+}
+class NYCIngredientFactory implements IngredientFactory {
+    void cheese() {} // NYC style cheese 구현
+    void dough() {}
+    // ...
+}
+class ChicagoIngredientFactory implements IngredientFactory {
+    void cheese() {} // Chicago style cheese 구현
+    void dough() {}
+    // ...
+}
+```
+
+</details>

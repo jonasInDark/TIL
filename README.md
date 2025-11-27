@@ -156,3 +156,20 @@ class ChicagoIngredientFactory implements IngredientFactory {
 ```
 
 </details>
+
+### Day 9
+<details>
+<summary>singleton pattern(1)</summary>
+
+- `singleton pattern` 클래스 인스턴스 하나만 생성하고 전역 접근을 제공한다.  
+원한다면 lazy evaluation 을 구현해 객체 생성에 많은 자원이 필요할 때 유용하다.  
+일반적으로 이 패턴을 구현한다면 멀티스레딩을 고려해야 한다.  
+만약 싱글톤 객체가 많다면 전반적인 디자인을 다시 고려해야 한다.  
+싱글톤을 상속하여 확장은 비추천...
+
+### Todo
+- [ ] singleton 문제점 살펴보기
+  - [ ] classloader
+  - [ ] reflection, (de)serializer
+
+</details>

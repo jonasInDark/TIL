@@ -167,9 +167,30 @@ class ChicagoIngredientFactory implements IngredientFactory {
 만약 싱글톤 객체가 많다면 전반적인 디자인을 다시 고려해야 한다.  
 싱글톤을 상속하여 확장은 비추천...
 
+</details>
+
+### Day 10
+<details>
+<summary>singleton pattern(2)</summary>
+
 ### Todo
-- [ ] singleton 문제점 살펴보기
-  - [ ] classloader
-  - [ ] reflection, (de)serializer
+- [ ] classloader 동작 원리
+
+### Done
+- [x] singleton 문제점 살펴보기
+    - [x] `classloader` 는 특정 클래스를 단 한번 로드하는 것을 보장한다.  
+    만약 2개 이상을 사용한다면 각 classloader 가 로딩한 인스턴스는 별개의 것이 되므로 유일성 원칙이 깨진다.  
+    서로 다른 classloader 는 서로 다른 메모리에 할당되기에 생성자에 방어코드가 무의미하다.  
+    이를 막기 위해 `enum` 을 사용하면 해결할 수 있다.
+    - [x] `reflection` meta-programming 을 위해 존재함.  
+    runtime 시 자기자신을 조사(introspection, 자기성찰)하고 조작(manipulation)할 수 있다.  
+    예를 들어 compile 시 없는 클래스를 사용자의 입력에 따라 동적 로딩을 할 수 있다.  
+    또한 `@Autowired` 같이 필요한 객체를 동적으로 주입할 수 있다(dependency injection).  
+    reflection 은 생성자가 private 이라도 객체를 생성할 수 있어 singleton 객체가 둘 이상 생성될 수 있다.  
+    하지만 singleton 을 `enum` 으로 정의하면 reflection 에도 자유롭다.  
+    - [x] `(de)serialization` 객체를 어떤 형식으로 저장한 다음 byte 로 바꿔 네트워크 전송(serialization), 전송 받은 byte stream 을 객체로 변환(deserialization).  
+    역직렬화 과정에서 객체가 생성될 수 있다.  
+    singleton class 에 `Serializable.readResolve` 가 구현되어 있다면 역직렬화 시 새롭게 생성된 객체 대신 이 메소드가 반환하는 객체를 사용한다.  
+    또한 `enum` 을 사용하면 (역)직렬화 문제를 해결할 수 있다.  
 
 </details>

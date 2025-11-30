@@ -173,9 +173,6 @@ class ChicagoIngredientFactory implements IngredientFactory {
 <details>
 <summary>singleton pattern(2)</summary>
 
-### Todo
-- [ ] classloader 동작 원리
-
 ### Done
 - [x] singleton 문제점 살펴보기
     - [x] `classloader` 는 특정 클래스를 단 한번 로드하는 것을 보장한다.  
@@ -192,5 +189,23 @@ class ChicagoIngredientFactory implements IngredientFactory {
     역직렬화 과정에서 객체가 생성될 수 있다.  
     singleton class 에 `Serializable.readResolve` 가 구현되어 있다면 역직렬화 시 새롭게 생성된 객체 대신 이 메소드가 반환하는 객체를 사용한다.  
     또한 `enum` 을 사용하면 (역)직렬화 문제를 해결할 수 있다.  
+
+</details>
+
+### Day 11
+<details>
+<summary>command pattern(1)</summary>
+
+- `command pattern` 요청을 수행하는 객체와 요청하는 객체를 분리한다.  
+예를 들면 TV 를 켜다 라는 동작을 하는 객체가 있고 TV 를 켜달라는 요청을 하는 객체가 있을 것이다.  
+이때 실질적인 동작을 하는 객체를 `receiver` 라 하고 요청하는 객체를 `invoker` 라 한다.  
+invoker 가 receiver 에게 요청하는 것을 객체로 캡슐화하는데 이를 `command` 라 한다.  
+따라서 invoker 는 command 를 통해 요청을 하게 되어 receiver 에게 의존하지 않게 된다.  
+`command.execute` 메소드는 receiver 의 실질적인 행동을 실행시킨다.  
+invoker 는 command 내 어떤 receiver 가 있는지 모른채 execute 를 실행하면 된다.  
+가능하다면 command 내 receiver 를 교체하여 재활용해도 된다.  
+
+### Todo
+- [ ] classloader 동작 원리
 
 </details>

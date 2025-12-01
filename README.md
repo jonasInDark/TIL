@@ -205,7 +205,39 @@ invoker 가 receiver 에게 요청하는 것을 객체로 캡슐화하는데 이
 invoker 는 command 내 어떤 receiver 가 있는지 모른채 execute 를 실행하면 된다.  
 가능하다면 command 내 receiver 를 교체하여 재활용해도 된다.  
 
+</details>
+
+### Day 12
+<details>
+<summary>command(2), adaptor pattern(1)</summary>
+
+- `command pattern`
+  - command 와 receiver 를 나누지 않고 command.execute 에 실질적인 로직을 구현하면 안되는 걸까  
+    invoker 가 receiver 에게 직접 요청을 할 수 있다.  
+    하지만 command 가 중간에 있어 invoker -> command -> receiver 로 요청을 하는 이유는 `요청(request)` 를 `캡슐화` 하기 위함이다.  
+    이것이 command pattern 의 핵심이고 결합도 분리(decoupling) 이다.  
+    만약 command.execute 에 실질적인 로직을 구현한다면 단일 책임 원칙(Single Responsibility Principle) 을 위반한다.  
+    command 는 요청의 캡슐화와 실제 로직 수행이라는 두가지 책임이 가지게 된다.  
+    만약 실질 로직 혹은 요청에 변화가 생기면 command 를 수정해야 한다.  
+    또한 동일 로직을 다른 command 에 사용하고 싶으면 이를 복사하여 사용해야 하는데 receiver 를 사용한다면 다른 command 객체에 사용하기 쉽다.  
+    smart command 객체도 있는데 확장과 수정이 없다면 command 객체 내 실질 로직을 구현할 수 있다.  
+    간단한 로직이고 이를 재사용할 일이 없을 때 예외적으로 사용한다.  
+    이렇게 하면 클래스 수가 감소되지만 원칙적으론 실질 로직을 receiver 에 구현한다.  
+  - `party mode` 여러 개체를 그룹화하여 동시에 처리
+    PartyCommand 는 여러 command 를 순차로 접근하여 execute 를 호출한다.  
+    예를 들어 collection 에 command 객체를 저장하고 loop 를 통해 순차적으로 실행한다.
+- `adaptor pattern` target interface 와 주어진 interface 가 서로 다를 때 이를 이어주는 역할을 한다.  
+  이때 주어진 interface 를 `adaptee interface` 라 한다.  
+  target interface 를 구현하고 adaptee class 를 참조하여 원하는 기능을 구현한다.  
+  이것을 `adaptor` 라고 부른다.  
+  target 이나 adaptee 를 상속하지 않고 composite 을 하기에 유연성이 높다.  
+  target 과 adaptee 를 다중상속하여 adaptor 를 만드는 경우 `class adaptor` 라 부른다.  
+  composite 을 한 경우 `object adaptor` 라 부른다.  
+
 ### Todo
-- [ ] classloader 동작 원리
+- [ ] `classloader` 에 관하여
+    - jvm 핵심 요소 중 하나이며 `*.class` 를 읽어 메모리에 올린다.
+    - 정확히는 runtime 시 필요한 클래스를 지연 로딩한다.
+    - jvm 은 (class, classloader) 의 인스턴스 쌍으로 식별한다.
 
 </details>

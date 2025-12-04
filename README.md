@@ -234,12 +234,6 @@ invoker 는 command 내 어떤 receiver 가 있는지 모른채 execute 를 실�
   target 과 adaptee 를 다중상속하여 adaptor 를 만드는 경우 `class adaptor` 라 부른다.  
   composite 을 한 경우 `object adaptor` 라 부른다.  
 
-### Todo
-- [ ] `classloader` 에 관하여
-    - jvm 핵심 요소 중 하나이며 `*.class` 를 읽어 메모리에 올린다.
-    - 정확히는 runtime 시 필요한 클래스를 지연 로딩한다.
-    - jvm 은 (class, classloader) 의 인스턴스 쌍으로 식별한다.
-
 </details>
 
 ### Day 13
@@ -271,5 +265,35 @@ facade interface 는 하나의 서브 시스템 당 여러 개를 만들 수 있
   // 즉, 간접적인 의존성이 생겨 유연하지 않다.
   manager.getSubSystem().getSubComponent().getValue();
   ```
+
+</details>
+
+### Day 14
+<details>
+<summary>template method pattern(1)</summary>
+
+- `template method pattern` 상위 클래스(혹은 abstract)에서 알고리즘의 기본적인 틀(template)을 메소드에 정의하며 하위 클래스에서 일부 구현을 할 수 있다.  
+알고리즘의 구조는 유지하고 이 중 몇몇 단계를 하위 클래스에서 재정의한다.  
+대부분의 코드를 재사용할 수 있어 개발하기 용이하다.  
+상속을 활용하는 것이라 코드 중복이 적고 알고리즘을 캡슐화한다.  
+template method 로 정의하면 일반적으로 `final` 을 붙인다.  
+상위 클래스에 추상 메소드를 선언하기 때문에 하위 클래스에서 반드시 구현을 해야 한다.  
+필요에 따라 재정의하는 `hook method` 도 있다.  
+- `strategy pattern` 앞선 패턴처럼 알고리즘을 캡슐화한다.  
+차이는 inheritance vs composition 이다.  
+전략 패턴은 알고리즘을 변경할 수 있다.
+- `hollywood principle` 고수준의 모듈이 저수준을 호출하며 그 반대는 불가하다.  
+그렇지 않으면 저수준의 모듈이 다른 고수준의 모듈에 의존하고 이를 반복하다 보면 의존성이 복잡해진다.  
+template method pattern 은 할리우드 원칙, 즉 `IoC(inversion of controll)` 을 가장 구체적이고 명확하게 구현하는 패턴이다.  
+예를 들어 `Arrays.sort` 는 `Comparable` interface 를 구현한 객체에 대해 사용할 수 있다.  
+고수준의 모듈(Arrays.sort)는 사용자가 구현한 저수준의 모듈(Comparable.compareTo) 을 호출한다.  
+일반적으로 사용자가 고수준의 모듈을 호출하여 사용하지만 위 경우 반대이다.
+
+### Done
+- [x] `classloader` 에 관하여
+    - jvm 핵심 요소 중 하나이며 `*.class` 를 읽어 메모리에 올린다.
+    - 정확히는 runtime 시 필요한 클래스를 지연 로딩한다.
+    - jvm 은 (class, classloader) 의 인스턴스 쌍으로 식별한다.
+    - 클래스 로딩 시 jvm 메소드 영역에 메모리를 할당 받는다.
 
 </details>

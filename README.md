@@ -297,3 +297,17 @@ template method pattern 은 할리우드 원칙, 즉 `IoC(inversion of controll)
     - 클래스 로딩 시 jvm 메소드 영역에 메모리를 할당 받는다.
 
 </details>
+
+### Day 15
+<details>
+<summary>iterator pattern(1)</summary>
+
+- `iterator pattern` collection 구현방법을 노출시키지 않고 모든 항목에 접근하는 방법 제공한다.  
+collection 내 모든 항목에 접근하는 건 iterator 객체가 담당한다.  
+이 패턴은 `factory method pattern` 과 상당히 유사하다.  
+- `single responsibility principle` 단일 책임 원칙은 하나의 클래스는 하나의 책임을 가져야 한다 이다.  
+만약 2개 이상의 책임이 있다면 클래스 변경 가능성이 늘어나기 때문이다.
+- `cohesion` 응집도 란 한 클래스 혹은 모듈이 얼마나 맡은 역할이 일관적인가 를 말한다.  
+응집도가 낮다는 것은 관련 없는 기능들이 모여 관리가 어렵다는 의미이다.
+
+</details>

@@ -351,12 +351,75 @@ collection 내 모든 항목에 접근하는 건 iterator 객체가 담당한다
     - 후자는 상태 객체 내부에 다른 상태 객체로 변환하는 과정이 있다.  
     예를 들면 신호등 빨간불이 시간이 되면 초록불로 바뀐다.
 
+</details>
+
+### Day 18
+<details>
+<summary>state pattern(2), solid</summary>
+
+- `state pattern` context 내부에 상태를 저장하며 각 상태마다 로직을 바꾸는 것은 복잡한 조건문이 필요하다.  
+그래서 상태에 대한 인터페이스를 정의하고 context 는 모든 상태를 참조한다(context 내부에 모든 상태 객체를 갖고 있다).  
+context 에는 상태를 전환하는 과정이 있다.  
+상태 클래스에는 context 를 참조한다.  
+조건이 되면 다음 상태로 전이를 context 에 요청한다.  
+context 는 모든 state 를 가져야 하기에 참조하고 state 는 상태 전이를 위해 context 를 참조한다.  
+이때 circular dependency 가 발생한다.  
+  - `circular dependency` 개선안
+    - 의존성 역전 원칙을 이용하여 context 에서 state transition 을 분리하여 state 가 이를 참조한다.
+      - context 와 state 간 의존성을 낮출 수 있다.
+    - state 는 다음 state 만 결정하고 전이는 context 에서 한다.  
+      state 는 context 를 알지 못해도 전이할 수 있다.
+    - third party 를 통해 context 와 state 를 완전히 분리시킨다.  
+      state 는 event 가 발생했다 를 third party 에 알리고(publish) 이것을 구독하는 manager 가 상태 전이를 한다.  
+    - 1, 3안은 비슷해보이지만 전자는 인터페이스를 통해 참조를 하고 state 가 다음 state 를 주입한다.  
+      후자는 중간에 third party 으로 간접 참조하며 이것으로 state 를 바꾼다.  
+      대신 후자는 시스템을 복잡하게 만들어 event 가 어디서 생성되어 어디로 흘러가는지 알기 어렵다.
+    - 상태 전이 규칙이 간단하다면 circular dependency 을 감수해도 좋다(느슨한 결합보다 구현의 편의를 챙기자).
+    - 규칙이 복잡하면 의존성 순환을 끊고 단방향으로 설계하자.
+- `solid` oop 설계를 위한 원칙이다.
+- `liskov substitution principle` 하위 클래스는 상위를 대체할 수 있어야 한다.  
+oop 의 polymorphism 을 위해 설계 원칙을 의미한다.  
+상위 클래스에서 정의한 규칙(contract)을 하위에서 수정하면 안된다.  
+즉 상위 클래스는 하위의 구현과 상관없이 의도대로 작동해야 한다.  
+`instanceof` 사용하지 않아도 상위 타입으로 사용해도 된다.
+- `dependency inversion principle` 의존성 역전 원칙으로 상위 모듈은 하위에 맞춰 개발하고 메세지를 보낸다.  
+상위가 하위의 추상화된 객체를 참조한다면 하위는 이를 구현하게 된다.  
+이때 의존성이 역전되었다 라고 한다.  
+- `java covariance` 자기 자신과 하위 객체의 타입으로 바꿀 수 있는 성질이다.  
+```java
+class Human {
+    public Human self() {
+        return this;
+    }
+}
+class Korean extends Human {
+    @Override
+    public Korean self() {
+        return this;
+    }
+} // Good
+
+class Human {
+  public double getNum() {
+    return 0;
+  }
+}
+class Korean extends Human {
+  public int getNum() { // compile error, int -> double
+    return (int) super.getNum();
+  }
+} // Bad
+```
+뿐만 아니라 이런 것도 가능하다.
+```java
+List<Human> arr = List.of(new Korean(), new Human());
+```
+generic 과 parameter type 에는 적용되지 않는다.
+
 ### Todo
 - [ ] file 저장 및 이동 원리
 - [ ] compiler, interpreter 에 대해서
 - [ ] virtual thread
 - [ ] fortran 개발 방식 알아보기
-- java covariance(공변성)
-- liskov substitution principle(리스코프 치환 원칙)
 
 </details>

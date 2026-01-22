@@ -4,10 +4,23 @@
 
 ### TIL in codeit
 <details>
-<summary>2025-12-30 ~ 2026-01-19</summary>
+<summary>2026-01-05</summary>
 
-### todo
-- ...
+- `merge` branch 간 합칠 때 사용한다.  
+  합칠 때 commit 이 남는다.  
+  즉, 어떤 branch 와 합쳤는지 알 수 있다.  
+  대신 commit log 를 보면 지저분할 수 있다.  
+  conflict 발생 시 합칠 때 한 번에 모든 충돌을 수정한다.
+- `rebase` branch 간 합칠 때 사용한다.  
+  main 과 feature branch 를 합칠 때 main 의 최신 commit 뒤로 feature 의 commit 들을 붙인다.  
+  그래서 어떤 branch 와 합쳤는지 알 수 없다.  
+  commit log 를 보면 마치 main 에서 계속 commit 을 생성했던 것 처럼 보인다(깔끔해 보임).
+- `fetch` remote repository 의 commit 들을 가져온다.  
+  예를 들면 `git fetch origin feature` 를 하자.  
+  remote repo 에 기록된 feature branch 의 commit 들을 local 에 가져와 `origin/feature` 라는 특수한 branch 를 만든다.  
+  이 branch 는 오직 읽기 전용이다.
+- `pull` `fetch` 를 한 후 local 과 remote 에서 내려받은 branch 를 merge 한다.  
+  이 명령어는 local 보다 remote 가 더 최신일 때 사용하면 좋다.
 
 </details>
 
@@ -89,5 +102,122 @@ public class UserService {
 - config meta: 어떤 객체를 생성해야 하는지, 어떤 역할을 하는지에 대한 정보이다.  
 개발자가 알려줘야 한다.  
 - AOP(Aspect Oriented Programming) 핵심 비즈니스 로직과 별개로 공통 기능을 분리하여 하나의 모듈로 관리하는 패러다임이다.
+
+</details>
+
+<details>
+<summary>2026-01-22</summary>
+
+- AOP 는 OOP 의 한계로 인해 등장 하였다.
+- `@Component` class 를 bean 으로 등록.  
+복잡한 과정 혹은 조건이 없다면 일반적으로 사용.
+- `@Bean` `@Configuration` 붙은 class 안 method 에 붙임.  
+이 method 가 반환하는 객체를 bean 으로 등록.  
+같은 class 지만 조건에 따라 다른 instance 를 생성해야 할 때 사용.
+- `spring aop` 는 runtime proxy 를 사용한다.  
+target 객체를 생성하고 이를 감싸는 proxy 객체를 생성한다.  
+method 에 적용된다.  
+생성자에도 할 수 있지만 조금 복잡하다...  
+*class 내부에서 method 호출(self-invocation) 시 설정한 aop 적용이 되지 않는다.*  
+- `Authentication(인증)` 증명, 모든 보안의 시작은 인증부터.
+- `Authorization(인가)` 허가
+- `spring cloud` MSA 지원을 위한.
+  - `config server`, `Eureka`, `API gateway`, `distributed tracking`, `circuit breaker`
+- `spring boot` 은 `spring` 을 빠르게 구성 및 시작할 수 있게 해준다.  
+spring 은 내장 서버가 없지만 spring boot 은 `tomcat` 을 가지고 있다.  
+- spring boot 이 제공하는 핵심 가치
+  - `auto config` spring 에서는 개발자가 필요한 설정을 일일이 다 해야 했다.  
+  - `independable application` spring 에서는 was 설치, app 개발(`.war` 배포), was 실행 을 해야 한다.  
+  spring boot 는 `.jar` 를 만들어 내부에 servlet container 를 포함하여 배포와 실행을 통합했다.
+  - `embedded server` tomcat, jetty 를 사용할 수 있다, 대부분 전자를 사용한다.
+- `intellij` 내 project setting 관련
+  - `group id` 프로젝트를 만드는 조직이나 단체, 도메인을 거꾸로 쓰는 것이 관례이다. 예) com.google
+  - `artifact` 프로젝트 이름, 단어 사이에 `-` 으로 연결, 소문자 사용
+  - `module` 프로젝트 내 작은 프로젝트, 거대한 프로젝트를 기능별로 분리.
+  - `library` 외부의 어떤 기능을 사용하기 위해 참조하는 코드들.
+  - `facets` 해당 module 이 어떤 framework 을 사용하는지 intellij 에게 알려준다.  
+  이를 통해 코드 완성 지원, 설정 파일 검사 등을 지원해줄 수 있다.
+- `jar` vs `war`
+  - jvm 이 있으면 실행 가능 / servlet container(예: tomcat) 위에서 동작.
+  - 독립 실행 / jsp, servlet 기반 앱.
+  - 내장 서버 포함 / 외부 was 필요.
+- `spring-boot-starter` spring boot 기본 구성.
+  - `spring-core`, `spring-context`, `spring-boot-autocofigure`, `SLF4J`, `Logback` 포함.
+- `spring-boot-starter-test` 테스트 툴 지원, 단위 혹은 기능 테스트 등.
+  - `JUnit`, `Mockito`, `spring-test`, `AssertJ` 포함.
+- bean 으로 등록하기 위해 component scan 을 하는데 동일한 위치 혹은 하위 패키지에 있어야 된다.  
+multi module 을 사용하는 경우 범위를 지정할 수 있고 여러 개를 설정할 수 있다.
+- 화면을 보여주기 위해 template(thymeleaf, ...), jsp(java server page) 를 사용한다.  
+template 을 사용하면 고유의 문법이 있다.  
+jsp 에는 html, css, js, java 를 사용할 수 있다.
+- config 중에 비밀번호 같은 중요한 정보는 서버의 환경변수에 입력하고 외부에서 주입한다.  
+만일 노출된 경우 비밀번호 혹은 ip 주소를 바꿔야 한다.
+- `gradle` software build automation tool.  
+우리가 만든 코드를 실행 가능한 형태(jar, war) 로 만드는 과정을 자동으로 해준다, 테스트도 진행해 준다.  
+`.java` -> `.class` 로 컴파일, 외부 library 의 .class 가져오고, 테스트 진행하고, 실행 가능한 app 으로 만든다.
+- `build.gradle`, `settings.gradle`, `gradlew`, `gradlew.bat`, `/gradle` 은 반드시 있어야 한다.
+  - `gradlew(.bat)` gradle wrapper 실행하는 프로그램. gradle version 을 통일 시키기 위함.
+  - `/gradle` gradle version 과 gradle 프로그램이 있다.
+- `plugins` gradle 에 없는 기능을 추가
+```groovy
+plugins {
+  // java project 임을 알린다, compiler 연결, .jar 만들 수 있다.
+  id 'java`
+  // springboot application 으로 만들어 준다, .jar 를 만든다.
+  id 'org.springframework.boot' version '3.2.0'
+  // springboot 가 검증한 library version 을 자동으로 맞춰준다.
+  id 'io.spring.dependency-management' version '1.1.4'
+}
+```
+- `dependencies`
+  - `compileOnly` compile 시 필요한 library 이며 .jar 에 포함되지 않는다.
+  - `runtimeOnly` 실행에 필요한 library 이며 .jar 에 포함된다.  
+  만약 코드에 이 library 를 사용하면 compile error 가 발생한다.
+  - `implementation` = `compileOnly` + `runtimeOnly`  
+  어짜피 `runtimeOnly` 도 .jar 에 포함되기에 `implementation` 하면 되지 않나?  
+  이것은 개발 시 특정한 library 에 의존하게 되는 상황이 만들어 진다.  
+  예를 들어 DB 에 연결할 때 interface 을 구현할 것이고 spring 이 DI 를 한다.  
+  runtimeOnly 로 하면 이런 상황을 강제하게 해준다.
+  - `annotationProcessor` `Lombok` 같이 annotation 기반의 library 에 사용된다.  
+  `compileOnly` 만 설정하면 compile 은 성공하지만 원하는 기능은 빠지게 된다(예: setter, getter 생성).  
+  annotationProcessor 로 등록한 `Lombok` 이 직접 setter, getter 를 생성 해준다.
+  - `testImplementation` test 시 필요한 library 선언.  
+  main 에 적용되는 library 들은 test 에 상속되어 main 사용한 library 는 test 에도 사용할 수 있다.  
+  이 library 들은 test 에만 사용되므로 최종 결과물에 포함되지 않는다.
+  packaging 은 src/main 의 결과물만 챙긴다.
+- build/libs 에 .jar 가 2개 생성된다.  
+마지막에 `-plain.jar` 는 외부 library .class 가 포함되지 않은 순수하게 내가 작성한 코드의 java bytecode 이다.  
+이 .jar 는 실행 가능하지 않다.
+- `task` build 를 포함한 gradle 의 기능을 수정 및 확장할 수 있다.  
+```groovy
+tasks.named("test") {
+  doSomething() // test 를 이것으로 대체
+}
+
+tasks.register("hello") {
+  printHello() // hello 라는 task 등록
+}
+```
+- port 80 은 생략 가능하다, 기본값.
+- config 적용에도 우선 순위가 있다.  
+명령형 인자(예 -server.port=1234) - application-{profile}.yml - application.yml
+- application config 는 여러 profile 을 가질 수 있다(dev, test, prod).
+- `@SpringBootApplication` 은 최상위 class 에 붙는다.  
+이 안에는 `@ComponentScan` 이 있어 하위 package 의 모든 class 들을 검사하여 spring container 에 등록한다.
+- `Servlet` vs `WebFlux`
+  - java web application 설계 방식
+  - blocking / non-blocking
+    - blocking: request 가 들어오면 thread 가 이를 처리하기 위해 다른 request 를 처리 하지 못한다.  
+    예) DB 에 요청을 보내고 결과를 받을 때까지 기다린다.  
+    기다리는 동안 다른 요청을 처리하지 않는다.
+  - thread-per-request / event loop
+- `ApplicationContext` 의 구현체를 생성하는데 `WebApplicationType` 에 따라 객체가 결정된다.
+  - `Servlet` - `AnnotationConfigServletWebServerApplicationContext`
+  - `WebFlux` - `AnnotationConfigReactiveWebServerApplicationContext`
+  - `AnnotationConfigApplicationContext`
+- `Bean` 등록에는 순서가 있다.  
+탐색한 class, spring 에서 제공하는 class 들을 bean 으로 등록한다.  
+기존에 존재하는 bean 들 대신에 내가 만든 객체를 bean 으로 등록하고 싶다.  
+overriding 하는 방식으로 같은 type 이라면 나중에 등록한 객체를 bean 으로 등록하고 먼저 등록된 객체는 사용하지 못하게 된다.
 
 </details>

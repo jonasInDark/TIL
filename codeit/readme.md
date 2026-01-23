@@ -221,3 +221,37 @@ tasks.register("hello") {
 overriding 하는 방식으로 같은 type 이라면 나중에 등록한 객체를 bean 으로 등록하고 먼저 등록된 객체는 사용하지 못하게 된다.
 
 </details>
+
+<details>
+<summary>2026-01-23</summary>
+
+- event 발생 시 callback 을 사용하면 결합도가 낮아진다.  
+예) 회원 가입하고 나면 회원에게 가입 축하 메일을 보내야 한다.  
+가입이 끝나면 메일 보내는 역할을 하는 참조 변수를 사용한다.  
+callback 은 event 발생 시 호출한다.  
+가입이 끝나면 callback 을 호출하고 가입 절차를 종료한다.  
+동시에 callback 은 가입 축하 메일을 보낸다.  
+비동기로 처리할 수 있다.  
+- `CommandLineRunner / ApplicationRunner` app 실행 직후 business logic 호출
+- `ORM(Object-Relational Mapping)` object 와 relationDB 를 연결해주는 기술이다.  
+oop 는 object 중심, RDB 는 table 중심이라 패러다임이 일치하지 않아 sql 양이 많아진다.  
+그래서 oop 로 개발하면 알아서 sql 을 만들어준다.
+- `JPA(Java Persistence API)` ORM 개발 시 사용하는 interface.  
+ORM 마다 사용법이 다를 수 있으므로 추상화가 필요하다.  
+- `Hibernate` JPA 를 구현한 library.
+- `controller` 와 `service` 의 method 수가 같은 경우가 많다.
+- `event` 를 잘 활용하자.  
+의존성을 확 줄일 수 있다.  
+예를 들어 현재 회원 가입을 하면 축하 메일을 보낸다.  
+하지만 카톡으로도 가입 축하 메세지를 보내려고 한다.  
+그럼 회원 가입 로직에 메일 전송, 카톡 메세지 전송 로직이 추가된다.  
+점점 요구사항이 늘어난다면 수정해야 하는 부분도 증가한다(의존성 증가).
+해결책으로 회원 가입이 되었다는 이벤트를 만든다.  
+가입 서비스는 로직을 그대로 종료한다.  
+이 이벤트를 구독하는 리스너에게 전달된다.  
+추후 가입 로직은 변화가 없고 리스너에만 변화가 생긴다.
+- 비동기 방식은 조심히 사용해야 한다.  
+transaction 이 나뉘게 되어 이를 병합해주는 과정이 필요하다.
+- DTO(Data Transfer Object) 데이터 전송을 위한 객체.
+
+</details>

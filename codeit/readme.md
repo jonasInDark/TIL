@@ -25,6 +25,23 @@
 </details>
 
 <details>
+<summary>2026-01-19</summary>
+
+- `Set` 수학에서 말하는 집합을 말한다.  
+즉 순서가 없고 중복을 허용하지 않는다.
+- `HashSet` element 를 추가할 때 각자 갖고 있는 `HashCode` 가 있다.  
+이를 계산하여 element 를 구분한다.  
+이 값이 같다면 같은 element 로 판단한다.  
+element 가 될 때 hash 값을 구한다.  
+이 값을 내부에 hash table 과 비교하여 기존에 값이 있다면 추가하지 않고 없다면 추가한다.  
+이 과정의 시간 복잡도는 `O(1)` 이다.
+- 데이터가 1M 개 있을 때 `O(n)` vs `O(logn)`
+  - 원하는 값을 찾을 때 전자는 데이터 수 만큼 연산이 필요하다.  
+  후자는 `log(1M)` 약 18~19번 필요하다.
+
+</details>
+
+<details>
 <summary>2026-01-20</summary>
 
 - 과제2-2차
@@ -253,5 +270,34 @@ ORM 마다 사용법이 다를 수 있으므로 추상화가 필요하다.
 - 비동기 방식은 조심히 사용해야 한다.  
 transaction 이 나뉘게 되어 이를 병합해주는 과정이 필요하다.
 - DTO(Data Transfer Object) 데이터 전송을 위한 객체.
+
+</details>
+
+<details>
+<summary>2026-01-26</summary>
+
+- DTO 는 controller 에서 service 로 데이터를 넘길 때 사용한다.  
+service 간 사용은 하지 않는다.  
+DTO 로 받으면 다른 곳에서 사용하기 어렵다.
+- `spring` 등장 배경  
+복잡한 구조, 과도한 설정, 느린 배포, 테스트 어려움, 기술 종속성, 객체 지향 원칙 위반
+- `framework` vs `library` 기능들의 집합.  
+전자는 우리가 만든 코드를 호출하고 후자는 우리가 만든 코드 내에서 호출한다.  
+즉, 프로그램 실행 흐름의 차이이다.  
+- 외부에서 bean 을 등록할 때 `@Configuration`, `@Bean` 을 사용한다.  
+그 외에는 `@Component` 와 같은 annotation 사용한다.
+- http 는 웹 통신 규약이며 비연결성, 무상태성 특징을 가진다.  
+이로 인해 session 이 등장했다.  
+- `servlet filter` controller 에 요청을 전달한다.  
+이것이 적법한 것인지 아닌지 거른다.  
+- `web server(nginx, apache, ...)` static assets(html, css, image, ...) 를 효과적으로 전달한다.  
+interpreter 혹은 jvm 같이 코드 실행할 수 있는 기능이 없다.  
+그래서 business logic 처리를 못한다.  
+대신 모든 요청이 이곳으로 들어와 static assets 을 원하는 건지 servlet container 로 가는지 판단한다.  
+또한 많은 요청이 들어 온다면 load balancing 으로 여러 container 에 할당 해준다.  
+server 가 container 로 요청을 전해주기에 container 의 port 를 숨길 수 있다.  
+추가) https 암호화
+- 실제 운영할 때 web server 는 따로 올려줘야 한다, .jar 에 없다.
+- `servlet container(tomcat, ...)` jvm 위에서 실행된다.
 
 </details>

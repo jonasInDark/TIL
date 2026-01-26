@@ -416,6 +416,29 @@ List<Human> arr = List.of(new Korean(), new Human());
 ```
 generic 과 parameter type 에는 적용되지 않는다.
 
+</details>
+
+### Day 19
+<details>
+<summary>proxy pattern(1)</summary>
+
+- `RMI(Remote Method Invocation)`
+  - client <-> stub <-> skeleton <-> server 
+  - 다른 힙 공간에 있는 객체를 불러올 수 없다.  
+  원격으로 원하는 객체를 사용하고 싶다.  
+  `stub` 은 client 가 마치 server 에 있는 객체라고 생각하여 참조하는 객체이다.  
+  즉, 실제 원하는 객체처럼 행동한다.  
+  client 에게 받은 요청을 직렬화하여 `skeleton` 에게 전달한다.  
+  `skeleton` 은 `stub` 과 `server` 간 연결해주는 객체로서 `stub` 이 요청을 server 가 인식할 수 있도록 바꿔준다.
+- `proxy pattern` 특정 객체으로의 접근을 제어하는 대리인을 제공한다.
+- `virtual proxy` 객체 생성에 많은 연산이 필요한 경우 생성을 미룬다.  
+생성 전 혹은 중에 일부 요청을 대신 처리할 수 있고 생성 후에 요청을 전달한다.
+- `proxy` 를 잘 사용하기 위해선 multi-threading 이 필수이다.  
+만약 user 가 channel 에 접속해 모든 message 를 보여줄때 DB 에 message 를 요청하는 동안 application 은 멈춰있는 상태이다.  
+이러면 불편함을 느끼게 되므로 message 를 요청하는 thread 를 따로 만들고 불러올 때까지 대체 화면을 보여준다.  
+성공적으로 데이터를 전달받으면 화면에 띄워준다.  
+이 과정에서 proxy 와 multi-threading 이 필요하다.
+
 ### Todo
 - [ ] file 저장 및 이동 원리
 - [ ] compiler, interpreter 에 대해서

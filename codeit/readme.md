@@ -301,3 +301,44 @@ server 가 container 로 요청을 전해주기에 container 의 port 를 숨길
 - `servlet container(tomcat, ...)` jvm 위에서 실행된다.
 
 </details>
+
+<details>
+<summary>2026-01-27</summary>
+
+- `c/c++` vs `java`
+  - 전자와 후자 모두 코드를 compile 한다.
+  - 전자는 compiler 가 수 많은 최적화 기법을 사용해 최고 성능의 기계어를 생성한다.  
+  0과 1로 이루어져 있어서 실행속도가 빠르다.
+  - 후자는 java compiler 가 jvm 이 읽을 수 있는 java bytecode 로 변환한다.  
+  jvm 의 JIT(Just-In-Time) compiler 가 한 줄씩 읽고 기계어로 번역한다.  
+  이때 반복되는 코드를 저장하여 속도를 높힐 수 있다.
+- `@ConfigurationProperties`  applicatoin.yml(혹은 properties) 의 값을 가져올 때 사용한다.  
+여러 타입을 묶어서 가져올 때 객체로 가져오면 된다.  
+  ```yaml
+  my:
+    settings:
+      host: 127.0.0.1
+      port: 8080
+      admin: admin
+      password: admin
+      auth: false
+  ```
+  위 처럼 string, integer, boolean 타입이라면 settings 라는 class 를 만들고 mapping 하면 된다.
+- `@Target` 해당 annotation 이 어디에 붙일 수 있는가.  
+예) `@Overriding` 은 method 에만 붙일 수 있다.
+- `@Documented` javadoc 기반 문서화할 수 있다.
+- `@Inherited` 이 annotation 이 붙은 annotation 이 붙은 class 를 상속받는다면 하위 클래스에도 붙은 것으로 한다.
+- `@Retention` annotation 이 존재기간 정책을 결정한다.  
+`SOURCE`: `.java` 에는 존재, `.class` 에 존재하지 않음.  
+`CLASS`: `.class` 에 존재, 실행 시 사용불가.  
+`RUNTIME`: `.class` 에 존재, 실행 가능.
+  ```java
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.SOURCE)
+  //오버라이딩이 제대로 되었는지 컴파일러가 확인하는 용도
+  //클래스 파일에 남길 필요 없이 컴파일 시에만 확인하고 사라짐
+  public @interface Override(){ }
+  ```
+
+
+</details>

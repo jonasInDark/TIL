@@ -340,5 +340,109 @@ server 가 container 로 요청을 전해주기에 container 의 port 를 숨길
   public @interface Override(){ }
   ```
 
+</details>
+
+<details>
+<summary>2026-01-28</summary>
+
+- spring 은 기본적으로 layered-architecture 이다.  
+`controller`, `service`, `repository` 계층이 있다.
+`Separation of Concerns` 관심사 분리를 통해 유지 보수, 확장성이 용이하다.  
+각 계층은 서로 무슨 일을 하는지 몰라야 한다.  
+예) `UserService` 는 `ChannelService` 를 참조하지 않는다.
+만약 참조한다면 circular dependency 를 조심해야 한다.
+- `controller` request 수신 및 결과 반환
+  - `@RestController` = `@Controller` + `@RequestBody`
+- `service` 핵심 부분이다. business logic 을 구현하고 transaction 처리한다.
+  - `@Service` service 계층임을 알린다.
+- `repository` 오직 여기서만 DB 에 접근할 수 있다.
+  - `@Repository` DB 에 접근하는 `Data Access Object, DAO` 역할을 의미한다.
+- `Event` 기반 설계는 결합도를 없앨 수 있다.  
+event 를 생성하는 곳과 수신하는 곳이 있어, 어디서 생성하는지 몰라도 되고 어디서 처리하는지 몰라도 된다.  
+단점은 event 흐름이 직관적이지 않고 흐름을 알기 어렵다.  
+그래서 핵심 로직을 과하게 event 기반으로 설계하지 않도록 한다.  
+`ApplicationEventPublisher` 로 event 발생을 알리고 `@EventListener` 가 붙은 method 에서 이를 처리한다.
+  ```java
+  // MemberService 와 WelcomeEmailListener 는 서로의 존재를 모른다!
+  @Service
+  public class MemberService {
+  
+      private final MemberRepository memberRepository;
+      private final ApplicationEventPublisher eventPublisher;
+  
+      public MemberService(MemberRepository memberRepository, ApplicationEventPublisher eventPublisher) {
+          this.memberRepository = memberRepository;
+          this.eventPublisher = eventPublisher;
+      }
+  
+      public void register(Member member) {
+          memberRepository.save(member); // 회원 정보 저장
+          eventPublisher.publishEvent(new MemberRegisteredEvent(member)); // 이벤트 발행
+      }
+  }
+  
+  @Component
+  public class WelcomeEmailListener {
+  
+    @EventListener
+    public void handle(MemberRegisteredEvent event) {
+      Member member = event.getMember();
+      // 환영 이메일 전송 로직
+      System.out.println("Welcome email sent to: " + member.getEmail());
+    }
+  }
+  ```
+- `@Component` vs `@Configuration` + `@Bean`
+  - 전자는 class 에 붙인다. 이 class 를 bean 으로 등록하라는 뜻이다.  
+  bean 생성 시 참조 객체가 필요하면 알아서 주입해준다.
+  - 후자의 `@Configuration` 도 class 에 붙인다. 대신 `@Bean` 붙은 method 의 결과 값을 bean 으로 등록한다.  
+  이렇게 하는 이유는 알아서 bean 생성이 아닌 특정한 값을 주입이 필요할 때가 있기 때문이다.  
+  `@Component` 와 `@Bean` 의 type 이 같다면 후자를 우선한다(수동으로 등록한 bean 을 우선한다).
+  ```java
+    @Configuration("configurationSection02")
+    public class ContextConfiguration {
+      @Bean(name="member")
+      public MemberDTO getMember() {
+      return new MemberDTO(1, "010-1234-5678", "jungmin@google.com", "이정민");
+      }
+  }
+  ```
+- `Dependency Injection` 의존성 주입은 3가지 방법이 있다.
+  - constructor: 생성자를 통해 주입되며 field 에 `final` 을 붙일 수 있다.
+  - setter: 주입받는 객체의 구현체가 바뀌어야 하는 상황에 사용한다.
+  - field: 이 방법은 test 를 어렵게 하고 circular dependency 가 생길 수 있다.  
+  하지 않는게 좋다.
+- `Scope Proxy` 어떤 bean 은 session 의 데이터를 사용하는 경우가 있을 수 있다.  
+session 은 어떤 유저가 http 요청을 보낼 때 유저당 하나 생성된다.  
+하지만 bean 생성은 application 이 실행되기 위한 준비과정이므로 session 생성 이전이다.  
+따라서 bean 에서 session 을 사용한다면 생성되지 않은 객체를 참조하므로 오류가 발생한다.  
+이를 위해 `proxy` 를 사용한다.  
+- `ApplicationContext` 생성은 대부분의 bean 생성 과정이 포함된다.  
+이는 문제가 발생하면 아예 application 실행을 막는 이유이다.  
+시작하기 전에 미리 만들고 요청마다 건네 주는 것이 효율적이다.  
+context 가 종료 되기 전 모든 bean 들은 `@PreDestroy` 를 실행하여 자원을 반납한다. 
+그 후 context 도 자원을 반납하고 소멸되고 application 이 종료된다.
+prototype 의 bean 은 한 번 생성되면 더이상 context 가 관리하지 않는다.
+- `application.yaml` `/resource` 에 위치한다.  
+중요한 정보(ip, port, password, ...) 가 담겨 있다(실제로는 정말 중요한 정보는 서버 내 환경변수에 등록한다).  
+이곳에서 값을 가져와야 할 때 `@Value` 를 사용한다.  
+`SpEL, Spring Expression Language` 으로 정규표현식과 같은 기능도 사용할 수 있다.  
+- `@ConfigurationProperties` 은 복잡한 구성의 config 를 가져올 수 있다.  
+`@Validated` 를 통해 올바른 값인지 확인할 수 있다.
+- `PropertySource` 여러 위치에서 수집한 config 를 <key, value> pair 로 가지고 있다.  
+같은 key 값이면 우선순위가 높은 value 로 정해진다.  
+동적으로 값을 추가할수도 있다.  
+  1. **command line** (`-server.port=9000`)
+  2. **OS env variable** (`SERVER_PORT=9000`)
+  3. **JVM system config** (`Dserver.port=9000`)
+  4. `application-{profile}.yaml`
+  5. `application.yaml`
+  6. `@PropertySource` 또는 `@TestPropertySource`로 명시한 외부 파일
+- `@Conditional` 을 붙여 `application.yml` 의 조건에 따라 bean 생성을 결정할 수 있다.
+- bean 생성 시 `DI` graph 를 그려 의존성을 주입하기에 대부분 문제가 없다.  
+하지만 graph 로는 알 수 없는 의존성이 있는 경우 bean 생성 순서를 정할 수 있다.  
+  - `@DependsOn(BeanName)` 해당 bean 이 먼저 초기화되어야 함을 알린다.
+  - `@Order` 같은 interface 혹은 class 를 구현/상속하는 경우 이들간 순서를 정할 수 있다.  
+  직접 참조하지 않을 때 사용하기 좋다.
 
 </details>

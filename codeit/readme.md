@@ -446,3 +446,21 @@ prototype 의 bean 은 한 번 생성되면 더이상 context 가 관리하지 �
   직접 참조하지 않을 때 사용하기 좋다.
 
 </details>
+
+<details>
+<summary>2026-01-29</summary>
+
+- null check 는 한 곳에 몰아서 하기 보단 각 계층에 적절하고 여러 곳에서 하는 게 좋다.
+- repository 에서 발생한 exception 은 service 에서 처리해야 한다.
+- custom type 이 2가지라면 boolean 으로 간단하게 정의할 수 있지만 나중에 확장을 고려하면 `enum` 을 쓰는 게 좋다.
+- package 구조는 계층과 기능 기반으로 나뉜다.  
+전자는 소규모 프로젝트에 적합하다.  
+controller, service, repository package 로 나눈다.  
+전체적인 구조를 확인할 수 있다.  
+단점은 각 계층이 비대해지면 관리하기 어려울 수 있다.  
+후자는 domain 기반으로 나눈다.  
+즉, user, channel, message 등으로 package 를 구성하고 각각 controller, service, repository 가 있다.  
+응집도가 높고 나중에 한 부분만 따로 떼어내어 msa 하기 좋다.  
+단점은 domain 경계를 잘 나눠야 한다.
+
+</details>

@@ -446,3 +446,44 @@ generic 과 parameter type 에는 적용되지 않는다.
 - [ ] fortran 개발 방식 알아보기
 
 </details>
+
+### Day 20
+<details>
+<summary>proxy pattern(2), review</summary>
+
+- `proxy pattern` proxy 는 객체를 대신한다.  
+객체에 대한 접근 권한을 제어해야 하는 경우가 있다.  
+예를 들어 인가를 받지 않은 요청은 처리하지 않거나 권한이 없는 객체가 어떤 기능 수행을 막는 경우(기능이 구현되어 있더라도)가 필요하다.  
+즉 객체에 따라 proxy 생성이 달라져야 한다.  
+동적으로 proxy 생성을 위해 reflect 를 이용할 수 있다.  
+  ```java
+  Person kim = getPerson("kim");
+  Person authorized = getAuthorizedPerson(kim);
+  authorized.doSomething(); // ok
+  
+  Person lee = getPerson("lee");
+  Person unAuthorized = getUnAuthorizedPerson(lee);
+  unAuthorized.doSomething(); // RuntimeError
+  ```
+- proxy 의 여러 종류
+  - remote proxy 다른 힙에 있는 객체 참조를 위함.
+  - virtual proxy 객체 생성에 비용이 많이 들어 lazy loading 을 위함.
+  - protection proxy 객체에 접근 제어를 위함.
+  - smart reference proxy 객체가 호출되는 시점에 부가적인 기능(logging, lock, ...) 지원을 위함.
+  - firewall proxy 네트워크 자원으로의 접근 제어를 위함.
+  - caching proxy 비용이 많이 드는 작업의 결과를 임시로 저장하고 여러 클라이언트에게 공유.
+  - synchronization proxy 여러 스레드에서 접근 시 안전하게 처리를 위함.
+  - complexity hiding proxy facade 와 비슷하게 복잡도가 높은 클래스 집합을 낮춰준다.  
+  전자는 인터페이스 제공을 위한, 후자는 접근 제어를 위함.
+  - copy-on-write proxy 복사를 요청을 lazy 로 처리.
+- `proxy` 와 `decorator` pattern 은 비슷해 보인다.  
+전자는 접근 제어, 후자는 기능 추가.
+- `transparency` `composite pattern` 에서 node 와 leaf 를 구분하지 않고 같은 interface 를 구현했다.  
+이러면 `instanceof` 를 사용하지 않고 동일한 method 를 사용할 수 있었다.  
+투명성이란 composite 객체와 leaf 객체가 같은 interface 를 구현하여 동일한 객체로 다루는 성질이다.  
+단점은 잘못된 method 를 호출했을 때 runtimeError 가 발생할 수 있다.
+- `safety` composite 객체와 leaf 객체의 interface 를 분리하여 잘못된 method 호출을 막는 성질이다.  
+장점은 compile 시 오류를 발견할 수 있다.  
+단점은 `instanceof` 를 사용하는 번거로움이 있다.
+
+</details>

@@ -464,3 +464,63 @@ controller, service, repository package 로 나눈다.
 단점은 domain 경계를 잘 나눠야 한다.
 
 </details>
+
+<details>
+<summary>2026-02-04</summary>
+
+- `reverse proxy` user request 가 서버로 향하는 것을 중간에 받아서 전달하는 proxy 이다.  
+`forward proxy` 는 서버에서 처리한 request 를 proxy 를 거쳐 user 에게 전달한다.
+- `HTTP` web browser 와 web server 가 통신을 위한 규약.  
+request 를 보내면 response 을 보내 응답한다.  
+request 에는 state 가 없다, 여태까지 어떤 request 를 보냈는지 등 알 수 없다.  
+`HTTP` 는 `stateless` 라는 특징을 가진다.  
+- `HTTP` request 는 대략 아래와 같은 형식을 가진다.  
+> (HTTP Method) (endpoint) (HTTP version)  
+> Headers  
+> Body
+
+- `Headers` key-value pair 로서 request 에 대한 meta data 를 의미한다.  
+request 에 담긴 data 가 어떤 것인지, browser 는 이 data 가 언제까지 유효한지 등이 담긴다.  
+- 대표적인 header 예시이다.
+  - `content-type` data format; image, json, ...
+  - `authorization` access token
+  - `cache-control` browser cache
+  - `user-agent` browser type; chrome, mobile, ...
+- `Uniform Resource Location` resource 위치
+  - key-value 는 filtering 할 때
+  - value 만 있는 경우는 명확하게 어떤 자원 하나를 지정할 때
+- `http method`
+  - `GET` 조회, url 글자 수 2048자 제한, cache 가능, url 에 request 가 담기기 때문에 보안 수준이 낮음
+  - `POST` 생성, cache 일반적으로 불가, 
+    - `login` 인증 정보를 생성 
+  - `PUT` 데이터 전체 수정, 전체 데이터를 덮어 씌울 때, 없으면 생성
+  - `PATCH` 일부 수정
+  - `DELETE` 삭제
+- `멱등성, idempotent` 몇 번을 실행해도 결과가 달라지지 않는 성질.  
+예) hash("apple") apple 에 대한 hashcode 값은 몇 번을 계산해도 달라지지 않는다.  
+`GET`, `PUT`, `DELETE` 는 몇 번을 해도 결과가 같다.  
+`PUT` 은 같은 값에 같은 값을 덮어씌우니 동일한 결과가 나온다.
+- `Representational State Transfer` http method 를 활용한 architecture 이다.  
+`RESTful api` 설계의 핵심은 url 이 명사, http method 가 동사로 표현한다.  
+예를 들어, `GET /getUser/1` -> `GET /user/1` 
+- http state code
+  - 100 ~ 199 정보 전달, 거의 사용하지 않음
+  - 200 ~ 299 request 성공
+    - 200: request success
+    - 201: resource created
+    - 204: No content, 성공했지만 보낼 데이터가 없음, delete 요청 후
+  - 300 ~ 399 redirect 
+  - 400 ~ 499 client error, request 가 잘못됨
+    - 400: bad request, parameter 가 잘못되었거나 body format error 등
+    - 401: unauthorized, 인증 실패로서 login 실패 혹은 token 잘못됨
+    - 403: forbidden, 권한 없음, 인증은 되었으나 접근할 권한이 없음, 무조건 인증 후 인가
+    - 404: not found, 없는 resource 요청
+    - 415: unsupported media type, content-type 이 잘못된 경우
+    - 429: too many requests, api 호출 한도 초과
+  - 500 ~ 599 server error
+    - 500: internal server error
+    - 502: bad gateway, backend server >> proxy server(nginx, apache server, ...) 로의 response 문제
+    - 503: service unavailable, 서버 과부하 혹은 점검
+- client >> load balancing >> proxy server >> api gateway >> backend server
+
+</details>

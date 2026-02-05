@@ -524,3 +524,65 @@ request 에 담긴 data 가 어떤 것인지, browser 는 이 data 가 언제까
 - client >> load balancing >> proxy server >> api gateway >> backend server
 
 </details>
+
+<details>
+<summary>2026-02-05</summary>
+
+- `Servlet` java 로 개발된 server-side component 이다.  
+request 를 처리한 결과를 http response 으로 반환하는 기술이다.  
+java 에서 web app 을 구현하기 위한 가장 기초적인 표준이다.  
+- servlet 은 singleton 으로 생성되며 아래와 같이 직접 개발할 수 있다.
+  ```java
+  @WebServlet(name = "helloServlet", urlPatterns = "/hello")
+  public class HelloServlet extends HttpServlet {
+      @Override
+      protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+          response.setContentType("text/plain");
+          response.setCharacterEncoding("UTF-8");
+          response.getWriter().write("Hello, Servlet World!");
+      }
+  }
+  ```
+- servlet 은 tomcat 과 같은 servlet container 가 circle of life 를 관리한다.  
+- spring 기반의 `DispatcherServlet` 을 하나 가지고 있다.  
+여기서 request 를 적절한 controller 에 전달한다.  
+이를 thread 가 처리한다.  
+- 과거에는 수 많은 servlet 을 개발하고 container 에 등록했다.  
+지금은 dispatcher 하나만 만들고 이를 중심으로 request 를 처리한다.  
+이를 front controller pattern 이라 한다.
+- servlet container 에는 여러 servlet 이 생성되는데 그 중 `defaultServlet` 이 있다.  
+이것은 application 내 resource 를 찾아 반환한다.  
+덕분에 web server 가 없어도 static resource 응답을 받을 수 있다.  
+  1. 정확히는 url 에 요청이 왔다
+  2. `DispatcherServlet` 이 `@RequestMapping` 에 있는지 확인
+  3. 없으면 `ResourceHttpRequestHandler` 가 `resource/static` 을 확인
+  4. 없으면 `DefaultServlet` 이 `resource` 를 확인
+- application 에 view template 을 가지고 있으면 무거워지기 때문에 이를 분리한다.  
+이제 servlet container 는 api server 가 되어 request 에 대한 json 을 반환하는 역할이 된다.  
+(이전에는 view 까지 rendering 해서 반환했다.)  
+front-end / back-end server 로 나누어 request 에 대한 json 을 front 에 넘기고 view 생성해 client 에게 보여준다.  
+- 이 구조는 front-end server 덕분에 `view` 와 `viewResolver` 가 더이상 쓰이지 않게 된다.  
+- `Dispatcher` 는 `HandlerMapping` 에게 어떤 controller 에게 이 request 를 보내야 하는지 확인한다.
+- controller 를 찾았다면 `HandlerAdaptor` 에게 request 를 위임한다.
+- adaptor 는 실제 controller 에게 request 를 전달하는데 이 과정에서 `HttpMessageConverter` 가 역직렬화 해준다.
+- controller 는 response 를 adaptor 에게 전달하는데 이 과정에서 converter 가 직렬화 해준다.
+- header 의 content-type 에 따라 converter 가 달라진다.
+- endpoint `/hello` 와 `hello.html` 이 있다면 controller 를 먼저 연결한다.  
+dispatcher 는 먼저 `HandlerMapping` 에 요청하고 없으면 resource handler 에게 요청하기 때문이다.
+- `/hello.html` 을 요청해도 `HandlerMapping` 을 호출한다.  
+모든 요청은 반드시 정해진 순서를 따르기 때문이다.
+- static resource 설정  
+`/src/main/resources` 를 바탕으로 `/static`, `/public`, `/resources`, `/META-INF/resources` 내 resource 를 불러올 수 있다.  
+예를 들면 `/static/css/hello.css` 를 요청하기 위해 `http://localhost:8080/css/hello.css` 로 하면 된다.
+- path 를 추가하고 싶다면 `.yml` 에 다가 `spring.web.resources.static-locations: classpath:/custom-location/`  라고 하면 된다.
+- `Classpath` app 실행 시 모든 `.class` 를 다 메모리에 올리지 않는다.  
+runtime 시 필요할 때 불러오는데 원하는 class 가 어디있는지에 대한 경로 집합을 `Classpath` 라 한다.
+- java 는 gc 가 있어 메모리 관리를 하지 않아도 된다.  
+jvm 이 있어 platform 상관없이 java byte code 가 있다면 실행할 수 있다.  
+하지만 무겁다. 메모리를 많이 쓰고 느리다. runtime 시 jit 가 통계 기반으로 최적화 해주긴 한다.  
+`AWS Lambda` 의 serverless, `MSA` 구조에서 java 의 단점은 치명적이다.  
+이런 jvm 을 개선한 `GraalVM` 이 등장했다.  
+c/cpp 처럼 `AOT, Ahead-Of-Time` compile 하여 기계어로 바꿔준다.  
+앞으로의 대세가 될 serverless, msa 환경에 적응하기 위해 등장한 것이다.
+
+</details>

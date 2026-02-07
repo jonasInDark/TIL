@@ -586,3 +586,32 @@ c/cpp 처럼 `AOT, Ahead-Of-Time` compile 하여 기계어로 바꿔준다.
 앞으로의 대세가 될 serverless, msa 환경에 적응하기 위해 등장한 것이다.
 
 </details>
+
+<details>
+<summary>2026-02-06</summary>
+
+- `RestClient` rest api 서버에 http 요청을 보낼 수 있는 library  
+예를 들어 필요한 데이터가 외부에 있다면, 기상 데이터 같은, backend server 는 http 요청을 해야 한다.  
+이를 도와주는 것이 `RestClient` 이다.  
+현재 spring 에서 `WebClient` 사용을 권장하고 있다.  
+이것은 비동기 처리 방식을 사용하는데 `WebFlux` 를 의존성에 추가해야 한다.
+- `@ExceptionHandler` spring 에서 exception 이 발생했을 때 실행된다.  
+  ```java
+  @GetMapping("/{id}")
+  public Member getMember(@PathVariable Long id) {
+      return memberService.findById(id)
+          .orElseThrow(() -> new MemberNotFoundException(id));
+  }
+  
+  @ExceptionHandler(MemberNotFoundException.class)
+  public ResponseEntity<String> handleMemberNotFound(MemberNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+  }
+  ```
+  여기서는 같은 class 내 발생한 exception 에 대해서만 실행된다.  
+  `@ControllerAdvice` 를 이용해 전역으로 처리할 수 있다.
+- 원래 모든 exception 을 controller 계층에서 처리한다(아직 controller 계층을 구현하지 않아서... ㅋㅋ).  
+service 에 더이상 try-catch 를 사용하지 않는다.  
+모든 exception 은 controller 에서 처리해야 한다.
+
+</details>

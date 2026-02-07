@@ -503,3 +503,69 @@ generic 과 parameter type 에는 적용되지 않는다.
 이 과정에서 `composition` 을 이용한다.
 
 </details>
+
+### Day 22
+<details>
+<summary>adaptor(2), MVC(1) pattern</summary>
+
+- `adaptor pattern` 공통 부모가 없어 추상화를 하지 못하는 경우가 있다.  
+interface 를 정의하고 객체를 인자를 받는 class 를 구현한다.  
+  ```java
+  class TestAlpha {
+      void speak() {
+        System.out.println("speak !");
+      }
+  }
+  
+  class TestBeta {
+      void talk() {
+        System.out.println("talk @");
+      }
+  }
+  
+  interface Adaptor {
+      void say() {}
+  }
+  
+  class TestAlphaAdaptor implements Adaptor {
+      TestAlpha instance;
+      TestAlphaAdaptor(TestAlpha instance) {
+          this.instance = instance;
+      }
+      
+      @Override
+      void say() {
+          instance.speak();  
+      }
+  }
+  
+  class TestBetaAdaptor implements Adaptor {
+      TestBeta instance;
+      TestBetaAdaptor(TestBeta instance) {
+          this.instance = instance;
+      }
+      
+      @Override
+      void say() {
+          instance.talk();
+      }
+  }
+  
+  ```
+- adaptor 의 장점은 서로 다른 객체들이 공통 부모가 있어서 추상화된 것처럼 사용할 수 있다.  
+또한 기존 코드를 수정하지 않고 계속 확장할 수 있다(`OCP`).  
+단점은 adaptor 가 필요하다면 모두 상속받아 구현해야 하므로 코드의 양이 늘어난다.  
+class 가 많아져 복잡해진다.
+- `Model, View, Controller pattern` 
+  - `Model` data, state, business logic 를 가진다.  
+  `observer pattern` 를 사용하여 state 가 변경되면 이를 구독한 controller, view 에게 전달한다.  
+  덕분에 이 둘에게 전혀 의존하지 않게 된다.  
+  새로운 model 은 기존의 view, controller 에 연결하기 위해 adaptor 를 만들면 된다.
+  - `View` model 의 data 를 화면에 보여준다.  
+  gui 복합 구성 요소들을 나타내고 `composite pattern` 을 사용한다.
+  - `Controller` user 의 입력을 받아 model 에게 전달한다.  
+  view 가 사용자의 입력을 받으면 이에 따라 controller 에게 전달한다.  
+  상황에 맞게 controller 가 호출된다.  
+  `strategy pattern` 을 사용한다.
+
+</details>

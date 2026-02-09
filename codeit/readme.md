@@ -615,3 +615,30 @@ service 에 더이상 try-catch 를 사용하지 않는다.
 모든 exception 은 controller 에서 처리해야 한다.
 
 </details>
+
+<details>
+<summary>2026-02-09</summary>
+
+- `@Controller` vs `@RestController`
+  - 전자는 data 를 담아 view 를 반환한다. 후자는 데이터만 담는다.  
+  후자는 front 와 backend 를 분리한다.  
+  front 에서 요청이 발생하여 backend api 로 전달된다.
+  backend server 는 어떤 view 에게 전달되는지 모른다.  
+  다양한 client 가 있어서 전자는 이들에 맞게 개발해야 한다.
+  후자는 front 와 backend 분리하여 데이터에만 집중할 수 있다.
+  - `SEO, Search Engine Optimization` 검색 엔진 봇은 전세계 수 많은 웹 페이지를 방문한다.  
+  봇은 웹 페이지를 읽고 어떤 분야인지 분석한다.  
+  전자는 서버가 화면을 rendering 하여 보내주기 때문에 완성된 웹 페이지를 받을 수 있다.  
+  후자는 데이터만 보내주고 rendering 은 client 에서 하기에 처음 받아 보는 웹 페이지가 비어 있다.  
+  그래서 전자는 `SEO` 에 유리하고 후자는 불리하다.
+- `Process` OS 로부터 resource 를 할당 받아 실행하는 작업 단위.
+- `Thread` process 내  실행되는 흐름의 단위이며 process 내 존재한다.  
+process 내 여러 thread 가 존재할 수 있으며 resource 를 공유한다.  
+- process 공간
+  - `Code`, `Data`, `Heap`, `Stack` 
+- thread 만의 독립적인 공간이 있다.
+  - `Program Counter` thread 가 현재 실행 중인 명령어의 주소 저장소(어디까지 작업했는지 기록). 
+  - `Register Set` CPU 의 register 를 저장(현재 계산 중인 임시 데이터).
+  - `Stack` method 호출 시 local variable 과 복귀 주소를 저장.
+
+</details>

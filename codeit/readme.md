@@ -728,3 +728,46 @@ servlet container 를 jvm 위에 올렸다가 내렸다가... 비효율적이다
   - `Supabase` firebase 대안으로 `PostgreSQL` 기반의 `BaaS` 이다.
 
 </details>
+
+<details>
+<summary>2026-02-12</summary>
+
+- response time
+  - 요청을 보내고 응답을 받은 시간
+- latency
+  - 요청 이후 첫 응답 바이트가 도착한 시간
+- throughput
+  - 처리 가능한 양, 부하 테스트 관련 지표
+- availability
+  - 시스템이 정상적으로 동작하는 비율. 99.9%(three nines), 99.99%(four nines)
+- resilience
+  - 장애 발생 시 다른 시스템에 영향을 주지 않고 격리하는 능력. circuit breaker, Retry, ...
+- isolation
+  - 장애 전파 방지. 결제 시스템 마비가 전체 서비스에 영향을 주면 안된다.
+- consistency
+  - uri, 요청/응답 구조, 상태코드는 일관되어야 한다. 
+- documentation
+  - api 문서 생성을 자동화해야 한다.
+- error message
+  - 단순히 500 internal server error 로 끝나면 안된다. 좀 더 구체적인 내용이 담겨야 한다.
+- aop 로 요청 처리시간을 log 로 남길 수 있다.  
+외부 라이브러리를 사용하여 각 엔드포인트에 대해 성능을 모니터링할 수 있다.
+  - `Prometheus` 시계열 메트릭 수집.
+  - `Grafana` Prometheus 와 연동하여 대시보드 생성.
+  - `Spring Boot Actuator` 내부 어플 상태
+- `HandlerInterceptor` 는 `HandlerAdaptor` 와 controller 사이에서 실행된다.
+- `stateless` 모든 요청은 독립적이다. 서버는 이전 요청 정보를 세션에 저장하지 않는다.  
+매 요청 시 필요한 정보를 담아 보내야 한다.  
+때문에 수평 확장이 가능하다. `sticky session` 이 필요하지 않는다.
+- request > dns server > (cdn) > lb > web server > api gateway > was  
+현대 어플리케이션은 하나의 서버만 띄우는 경우가 없다.  
+  1. `www.example.com/user/1` 최초 요청을 보냄. 
+  2. dns server 에서 `www.example.com` 의 ip 주소를 찾아 반환.  
+  만약 정적 리소스를 원한다면 client 와 가장 가까운 cdn 이 반환.
+  3. `123.123.123.123:8080/user/1` 로 요청을 보냄.
+  4. lb 가 어떤 web server 로 보낼지 결정.
+  5. web server 에서 처리할 수 없는 요청은 여러 gateway 중 하나에 보냄.
+  6. gateway 에서 설정을 읽어 `/user` 를 담당하는 was 에 보냄.
+  7. 요청을 처리.
+
+</details>

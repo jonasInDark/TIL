@@ -1,16 +1,18 @@
 # TIL
+
 today-i-learned
 
 ### Day 1
+
 <details>
 <summary>design pattern</summary>
 
-- 상위 클래스를 만들고 상속하여 상황에 맞게 overriding 을 한다.  
-만약 새로운 기능을 추가해야 할 때 어떤 클래스는 추가된 기능을 사용하지 않을 수 있다.  
-즉, 상속을 잘 활용했다고 할 수 있지만 유지보수는 점점 더 까다로워 질 수 있다.  
-그렇다고 새로운 기능이 추가될 때 마다 interface 를 추가해 구현하는 것은 많은 부담이 된다.  
-따라서 상위 클래스에서 달라지는 부분과 그렇지 않은 부분을 분리해보자.  
-이를 캡슐화라고 하며 유연성을 향상시킨다.  
+- 상위 클래스를 만들고 상속하여 상황에 맞게 overriding 을 한다.
+  만약 새로운 기능을 추가해야 할 때 어떤 클래스는 추가된 기능을 사용하지 않을 수 있다.
+  즉, 상속을 잘 활용했다고 할 수 있지만 유지보수는 점점 더 까다로워 질 수 있다.
+  그렇다고 새로운 기능이 추가될 때 마다 interface 를 추가해 구현하는 것은 많은 부담이 된다.
+  따라서 상위 클래스에서 달라지는 부분과 그렇지 않은 부분을 분리해보자.
+  이를 캡슐화라고 하며 유연성을 향상시킨다.
 - 코드를 수정하는 여러 이유 중...
   - 새로운 기능을 추가하거나 기존 기능을 확장할 때
   - DB 종류를 바꾸고 data format 이 바뀔 때
@@ -18,6 +20,7 @@ today-i-learned
 </details>
 
 ### Day 2
+
 <details>
 <summary>strategy pattern</summary>
 
@@ -25,118 +28,131 @@ today-i-learned
 - 이런 식으로 두 클래스를 합치는 것을 `composition` 이라 한다.
 - `strategy pattern` 이란?
   - 정의를 살펴보니 아직 이해가 안되서 일단 넘어가자...
-- 객체지향의 4대 요소
+- ㅇ객체지향의 4대 요소
   - 추상화: 복잡한 요소를 숨기고 핵심적인 기능을 공개하여 사용자는 어떤 원리로 동작함을 몰라도 사용할 수 있다.
   - 캡슐화: 데이터의 무결성 유지를 위해 직접적인 접근을 거부하고 공개된 메서드로 접근하도록 한다.
   - 상속: 이미 구현된 상위 클래스의 필드와 메서드를 물려받아 재활용할 수 있다.
-  - 다형성: 상속에 의해 나타나는 요소이다.  
-  상속을 한 클래스의 객체는 상위 클래스의 타입으로 동작할 수 있다.  
-  상위 클래스의 메소드를 재정의할 수 있다.  
-  같은 클래스 내 동일한 이름의 메소드는 매개변수를 달리하여 정의할 수 있다.
+  - 다형성: 상속에 의해 나타나는 요소이다.
+    상속을 한 클래스의 객체는 상위 클래스의 타입으로 동작할 수 있다.
+    상위 클래스의 메소드를 재정의할 수 있다.
+    같은 클래스 내 동일한 이름의 메소드는 매개변수를 달리하여 정의할 수 있다.
 
 </details>
 
 ### Day 3
+
 <details>
 <summary>observer pattern(1)</summary>
 
-- `Observer Pattern` `subject` 의 상태를 지속적으로 `observer` 가 필요로 할 때 사용하는 디자인 패턴이며, one-to-many 관계이다.  
-여기서 `observer` 는 여러 개 일 수 있다.
-- 서로 의존하는 형태이므로 강한 결합(`coupling`) 구조를 지닌다.  
-이는 유연성을 떨어뜨리므로 약한 결합(`loose coupling`)을 위해 `interface` 를 정의하여 추상화를 해야 한다.  
+- `Observer Pattern` `subject` 의 상태를 지속적으로 `observer` 가 필요로 할 때 사용하는 디자인 패턴이며, one-to-many 관계이다.
+  여기서 `observer` 는 여러 개 일 수 있다.
+- 서로 의존하는 형태이므로 강한 결합(`coupling`) 구조를 지닌다.
+  이는 유연성을 떨어뜨리므로 약한 결합(`loose coupling`)을 위해 `interface` 를 정의하여 추상화를 해야 한다.
 
 </details>
 
 ### Day 4
+
 <details>
 <summary>observer pattern(2)</summary>
 
 - `subject`의 상태가 변할 때 `observer` 에게 값을 보내는 방식을 `push`, `observer` 가 필요할 때마다 값을 요청하는 방식을 `pull` 이라 한다.
-- 보통 `pull` 을 권장한다.  
-- `subject` 의 상태가 변할 때 `update` 에 값을 넣는 방식은 향후 수집하는 데이터가 증가할 때마다 observer 의 interface 를 수정해야 하기에  
-notify 를 통해 알리고 각 observer 들이 필요한 값을 가져가는 방식이 추후 확장하는데 좋다.
+- 보통 `pull` 을 권장한다.
+- `subject` 의 상태가 변할 때 `update` 에 값을 넣는 방식은 향후 수집하는 데이터가 증가할 때마다 observer 의 interface 를 수정해야 하기에
+  notify 를 통해 알리고 각 observer 들이 필요한 값을 가져가는 방식이 추후 확장하는데 좋다.
 
 ### Done
-- [x] `PropertyChangeListner` 는 `observer` 에 해당한다.  
-`propertyChange` 가 호출되며 parameter 로 전달되는 `PropertyChangeEvent` 에 변경된 속성의 이름과 oldValue, newValue 가 담겨있다.
+
+- [X]  `PropertyChangeListner` 는 `observer` 에 해당한다.
+  `propertyChange` 가 호출되며 parameter 로 전달되는 `PropertyChangeEvent` 에 변경된 속성의 이름과 oldValue, newValue 가 담겨있다.
 
 </details>
 
 ### Day 5
+
 <details>
 <summary>decorator pattern(1)</summary>
 
-- `decorator pattern` 객체에 기능을 추가하고 싶을 때 적절한 패턴이다.  
-- `OCP(Open-Closed Principle)` 확장에는 열려있고 수정에는 닫혀 있는 원리.  
-수정할 부분이 많다는 것은 확장 시에도 수정할 부분이 많다는 것이다.  
-확장할 부분을 선택하는 것은 신중하게 해야 한다.  
-그렇지 않으면 괜히 쓸데없는 일을 하는 것이며 오히려 복잡한 코드를 만들 수 있다.
+- `decorator pattern` 객체에 기능을 추가하고 싶을 때 적절한 패턴이다.
+- `OCP(Open-Closed Principle)` 확장에는 열려있고 수정에는 닫혀 있는 원리.
+  수정할 부분이 많다는 것은 확장 시에도 수정할 부분이 많다는 것이다.
+  확장할 부분을 선택하는 것은 신중하게 해야 한다.
+  그렇지 않으면 괜히 쓸데없는 일을 하는 것이며 오히려 복잡한 코드를 만들 수 있다.
 
 </details>
 
 ### Day 6
+
 <details>
 <summary>decorator(2), factory pattern(1)</summary>
 
-- `decorator pattern` 은 기존 클래스에 수정없이 기능을 추가 혹은 확장할 때 사용한다.  
-동적으로 적용할 수 있다.  
-기능을 확장하기 위해 감싸는 클래스와 같은 인터페이스를 사용해야 한다.  
-    ```java
-    Person person = new Person();
-    Person decoratedPerson = new DecoratedPerson(person);
-    ```
-- 단점은 객체가 어떤 decorator 를 거쳤는지 알 수 없다.  
-만약 이를 추적한다면 이 패턴을 사용하는 의도에 벗어나게 된다.  
-또한 잡다한 클래스를 구현해야 하므로 일련의 과정을 이해하기 어렵다.  
-- `factory pattern` `new` 생성자는 자칫 클래스 간 의존성을 높일 수 있다.  
-반드시 필요하지만 이를 낮추기 위해 등장하였다.  
-- 예를 들어 피자가게에서 피자를 만들고 굽고 자르고 포장하는 과정을 한다고 하자.  
-피자가게는 사실 어떤 피자인지 몰라도 된다.  
-즉, 치즈피자, 페페로니 피자, ... 등 어떤 피자라도 만들어지면 이후 과정은 동일하다.  
-그래서 피자를 만드는 부분을 캡슐화한다면 피자종류와의 의존성을 낮출 수 있다.  
+- `decorator pattern` 은 기존 클래스에 수정없이 기능을 추가 혹은 확장할 때 사용한다.
+  동적으로 적용할 수 있다.
+  기능을 확장하기 위해 감싸는 클래스와 같은 인터페이스를 사용해야 한다.
+  ```java
+  Person person = new Person();
+  Person decoratedPerson = new DecoratedPerson(person);
+  ```
+- 단점은 객체가 어떤 decorator 를 거쳤는지 알 수 없다.
+  만약 이를 추적한다면 이 패턴을 사용하는 의도에 벗어나게 된다.
+  또한 잡다한 클래스를 구현해야 하므로 일련의 과정을 이해하기 어렵다.
+- `factory pattern` `new` 생성자는 자칫 클래스 간 의존성을 높일 수 있다.
+  반드시 필요하지만 이를 낮추기 위해 등장하였다.
+- 예를 들어 피자가게에서 피자를 만들고 굽고 자르고 포장하는 과정을 한다고 하자.
+  피자가게는 사실 어떤 피자인지 몰라도 된다.
+  즉, 치즈피자, 페페로니 피자, ... 등 어떤 피자라도 만들어지면 이후 과정은 동일하다.
+  그래서 피자를 만드는 부분을 캡슐화한다면 피자종류와의 의존성을 낮출 수 있다.
 - 피자의 종류가 늘어난다면 피자 만드는 부분을 수정하면 되므로 복잡하지 않다.
 
 </details>
 
 ### Day 7
+
 <details>
 <summary>factory pattern(2)</summary>
 
-- `Dependency Inversion Principle` 의존성 역전 원칙은 concrete 이 아닌 abstract 에 의존해야 한다 를 의미한다.  
-예를 들어 게시판을 만든다고 하자.  
-DB 에 접근하여 게시글을 가져와 화면에 보여준다.  
-이 과정을 고수준 모듈이라 하면 DB 에 접근하는 것을 저수준 모듈이라 한다.  
-이때 DB 가 MySQL 이라면 관련 connector 를 만들어 query 를 보내고 데이터를 가져올 것이다.  
-이 과정이 너무 구체적(concrete) 하여 만약 다른 DB 로 바꿔야 한다면 수정을 해야 한다.  
-DB 에 연결하여 query 를 보내는 것을 추상화한다면 고수준 모듈은 이 인터페이스를 사용하면 되고 저수준에서는 구현하면 된다.  
-즉, 상위 모듈은 어떤 DB 를 사용하는지 상관이 없어져 의존성이 줄어든다.
+- `Dependency Inversion Principle` 의존성 역전 원칙은 concrete 이 아닌 abstract 에 의존해야 한다 를 의미한다.
+  예를 들어 게시판을 만든다고 하자.
+  DB 에 접근하여 게시글을 가져와 화면에 보여준다.
+  이 과정을 고수준 모듈이라 하면 DB 에 접근하는 것을 저수준 모듈이라 한다.
+  이때 DB 가 MySQL 이라면 관련 connector 를 만들어 query 를 보내고 데이터를 가져올 것이다.
+  이 과정이 너무 구체적(concrete) 하여 만약 다른 DB 로 바꿔야 한다면 수정을 해야 한다.
+  DB 에 연결하여 query 를 보내는 것을 추상화한다면 고수준 모듈은 이 인터페이스를 사용하면 되고 저수준에서는 구현하면 된다.
+  즉, 상위 모듈은 어떤 DB 를 사용하는지 상관이 없어져 의존성이 줄어든다.
 
 </details>
 
 ### Day 8
+
 <details>
 <summary>factory pattern(3)</summary>
 
 - `Dependency Inversion Principle` 에 관한 조언
+
   1. 변수 타입을 `concrete` 가 아닌 `abstract` 를 사용하라.
+
   ```java
   MySQLConnector connector = new MySQLConnector(); // not good
   AbstractConnector connector = new MySQLConnector(); // recommended
   ```
+
   2. `concrete` 를 상속하여 확장하지 말자.
+
   ```java
    class SpecialFileLogger extends FileLogger {} // FileLogger 의 구체적인 방식을 사용하게 되어 여전히 의존성이 높다.
    class SpecialFileLogger extends AbstractLogger {} // AbstractLogger 의 추상 메소드를 구현하여 의존성을 줄일 수 있다.
   ```
-  3. base class 에 구현된 메소드를 오버라이딩하지 말자.  
-  이미 구현된 메소드를 오버라이딩하는 것은 base class 가 제대로 추상화 되지 않았다는 것이다.  
-  모든 하위 클래스에서 사용할 수 있는 것만 정의하자.
-- `factory method pattern`  
-클라이언트는 객체를 생성할 때 concrete 가 아닌 abstract 를 사용하여 유연성을 높일 수 있다.  
-이 객체를 생성하는 팩토리 클래스의 메소드를 하위 클래스에서 구현하면 클라이언트를 수정하지 않아도 된다.  
-즉, 하위 클래스에 따라 타입이 결정되므로 쉽게 확장할 수 있다.
-- `abstract factory pattern`  
-서로 연관있는 객체들의 `집합(family)`을 추상화한다.  
+
+  3. base class 에 구현된 메소드를 오버라이딩하지 말자.
+     이미 구현된 메소드를 오버라이딩하는 것은 base class 가 제대로 추상화 되지 않았다는 것이다.
+     모든 하위 클래스에서 사용할 수 있는 것만 정의하자.
+- `factory method pattern`
+  클라이언트는 객체를 생성할 때 concrete 가 아닌 abstract 를 사용하여 유연성을 높일 수 있다.
+  이 객체를 생성하는 팩토리 클래스의 메소드를 하위 클래스에서 구현하면 클라이언트를 수정하지 않아도 된다.
+  즉, 하위 클래스에 따라 타입이 결정되므로 쉽게 확장할 수 있다.
+- `abstract factory pattern`
+  서로 연관있는 객체들의 `집합(family)`을 추상화한다.
+
 ```java
 interface IngredientFactory {
     void cheese();
@@ -158,96 +174,102 @@ class ChicagoIngredientFactory implements IngredientFactory {
 </details>
 
 ### Day 9
+
 <details>
 <summary>singleton pattern(1)</summary>
 
-- `singleton pattern` 클래스 인스턴스 하나만 생성하고 전역 접근을 제공한다.  
-원한다면 lazy evaluation 을 구현해 객체 생성에 많은 자원이 필요할 때 유용하다.  
-일반적으로 이 패턴을 구현한다면 멀티스레딩을 고려해야 한다.  
-만약 싱글톤 객체가 많다면 전반적인 디자인을 다시 고려해야 한다.  
-싱글톤을 상속하여 확장은 비추천...
+- `singleton pattern` 클래스 인스턴스 하나만 생성하고 전역 접근을 제공한다.
+  원한다면 lazy evaluation 을 구현해 객체 생성에 많은 자원이 필요할 때 유용하다.
+  일반적으로 이 패턴을 구현한다면 멀티스레딩을 고려해야 한다.
+  만약 싱글톤 객체가 많다면 전반적인 디자인을 다시 고려해야 한다.
+  싱글톤을 상속하여 확장은 비추천...
 
 </details>
 
 ### Day 10
+
 <details>
 <summary>singleton pattern(2)</summary>
 
 ### Done
-- [x] singleton 문제점 살펴보기
-    - [x] `classloader` 는 특정 클래스를 단 한번 로드하는 것을 보장한다.  
-    만약 2개 이상을 사용한다면 각 classloader 가 로딩한 인스턴스는 별개의 것이 되므로 유일성 원칙이 깨진다.  
-    서로 다른 classloader 는 서로 다른 메모리에 할당되기에 생성자에 방어코드가 무의미하다.  
+
+- [X]  singleton 문제점 살펴보기
+  - [X]  `classloader` 는 특정 클래스를 단 한번 로드하는 것을 보장한다.
+    만약 2개 이상을 사용한다면 각 classloader 가 로딩한 인스턴스는 별개의 것이 되므로 유일성 원칙이 깨진다.
+    서로 다른 classloader 는 서로 다른 메모리에 할당되기에 생성자에 방어코드가 무의미하다.
     이를 막기 위해 `enum` 을 사용하면 해결할 수 있다.
-    - [x] `reflection` meta-programming 을 위해 존재함.  
-    runtime 시 자기자신을 조사(introspection, 자기성찰)하고 조작(manipulation)할 수 있다.  
-    예를 들어 compile 시 없는 클래스를 사용자의 입력에 따라 동적 로딩을 할 수 있다.  
-    또한 `@Autowired` 같이 필요한 객체를 동적으로 주입할 수 있다(dependency injection).  
-    reflection 은 생성자가 private 이라도 객체를 생성할 수 있어 singleton 객체가 둘 이상 생성될 수 있다.  
-    하지만 singleton 을 `enum` 으로 정의하면 reflection 에도 자유롭다.  
-    - [x] `(de)serialization` 객체를 어떤 형식으로 저장한 다음 byte 로 바꿔 네트워크 전송(serialization), 전송 받은 byte stream 을 객체로 변환(deserialization).  
-    역직렬화 과정에서 객체가 생성될 수 있다.  
-    singleton class 에 `Serializable.readResolve` 가 구현되어 있다면 역직렬화 시 새롭게 생성된 객체 대신 이 메소드가 반환하는 객체를 사용한다.  
-    또한 `enum` 을 사용하면 (역)직렬화 문제를 해결할 수 있다.  
+  - [X]  `reflection` meta-programming 을 위해 존재함.
+    runtime 시 자기자신을 조사(introspection, 자기성찰)하고 조작(manipulation)할 수 있다.
+    예를 들어 compile 시 없는 클래스를 사용자의 입력에 따라 동적 로딩을 할 수 있다.
+    또한 `@Autowired` 같이 필요한 객체를 동적으로 주입할 수 있다(dependency injection).
+    reflection 은 생성자가 private 이라도 객체를 생성할 수 있어 singleton 객체가 둘 이상 생성될 수 있다.
+    하지만 singleton 을 `enum` 으로 정의하면 reflection 에도 자유롭다.
+  - [X]  `(de)serialization` 객체를 어떤 형식으로 저장한 다음 byte 로 바꿔 네트워크 전송(serialization), 전송 받은 byte stream 을 객체로 변환(deserialization).
+    역직렬화 과정에서 객체가 생성될 수 있다.
+    singleton class 에 `Serializable.readResolve` 가 구현되어 있다면 역직렬화 시 새롭게 생성된 객체 대신 이 메소드가 반환하는 객체를 사용한다.
+    또한 `enum` 을 사용하면 (역)직렬화 문제를 해결할 수 있다.
 
 </details>
 
 ### Day 11
+
 <details>
 <summary>command pattern(1)</summary>
 
-- `command pattern` 요청을 수행하는 객체와 요청하는 객체를 분리한다.  
-예를 들면 TV 를 켜다 라는 동작을 하는 객체가 있고 TV 를 켜달라는 요청을 하는 객체가 있을 것이다.  
-이때 실질적인 동작을 하는 객체를 `receiver` 라 하고 요청하는 객체를 `invoker` 라 한다.  
-invoker 가 receiver 에게 요청하는 것을 객체로 캡슐화하는데 이를 `command` 라 한다.  
-따라서 invoker 는 command 를 통해 요청을 하게 되어 receiver 에게 의존하지 않게 된다.  
-`command.execute` 메소드는 receiver 의 실질적인 행동을 실행시킨다.  
-invoker 는 command 내 어떤 receiver 가 있는지 모른채 execute 를 실행하면 된다.  
-가능하다면 command 내 receiver 를 교체하여 재활용해도 된다.  
+- `command pattern` 요청을 수행하는 객체와 요청하는 객체를 분리한다.
+  예를 들면 TV 를 켜다 라는 동작을 하는 객체가 있고 TV 를 켜달라는 요청을 하는 객체가 있을 것이다.
+  이때 실질적인 동작을 하는 객체를 `receiver` 라 하고 요청하는 객체를 `invoker` 라 한다.
+  invoker 가 receiver 에게 요청하는 것을 객체로 캡슐화하는데 이를 `command` 라 한다.
+  따라서 invoker 는 command 를 통해 요청을 하게 되어 receiver 에게 의존하지 않게 된다.
+  `command.execute` 메소드는 receiver 의 실질적인 행동을 실행시킨다.
+  invoker 는 command 내 어떤 receiver 가 있는지 모른채 execute 를 실행하면 된다.
+  가능하다면 command 내 receiver 를 교체하여 재활용해도 된다.
 
 </details>
 
 ### Day 12
+
 <details>
 <summary>command(2), adaptor pattern(1)</summary>
 
 - `command pattern`
-  - command 와 receiver 를 나누지 않고 command.execute 에 실질적인 로직을 구현하면 안되는 걸까  
-    invoker 가 receiver 에게 직접 요청을 할 수 있다.  
-    하지만 command 가 중간에 있어 invoker -> command -> receiver 로 요청을 하는 이유는 `요청(request)` 를 `캡슐화` 하기 위함이다.  
-    이것이 command pattern 의 핵심이고 결합도 분리(decoupling) 이다.  
-    만약 command.execute 에 실질적인 로직을 구현한다면 단일 책임 원칙(Single Responsibility Principle) 을 위반한다.  
-    command 는 요청의 캡슐화와 실제 로직 수행이라는 두가지 책임이 가지게 된다.  
-    만약 실질 로직 혹은 요청에 변화가 생기면 command 를 수정해야 한다.  
-    또한 동일 로직을 다른 command 에 사용하고 싶으면 이를 복사하여 사용해야 하는데 receiver 를 사용한다면 다른 command 객체에 사용하기 쉽다.  
-    smart command 객체도 있는데 확장과 수정이 없다면 command 객체 내 실질 로직을 구현할 수 있다.  
-    간단한 로직이고 이를 재사용할 일이 없을 때 예외적으로 사용한다.  
-    이렇게 하면 클래스 수가 감소되지만 원칙적으론 실질 로직을 receiver 에 구현한다.  
+  - command 와 receiver 를 나누지 않고 command.execute 에 실질적인 로직을 구현하면 안되는 걸까
+    invoker 가 receiver 에게 직접 요청을 할 수 있다.
+    하지만 command 가 중간에 있어 invoker -> command -> receiver 로 요청을 하는 이유는 `요청(request)` 를 `캡슐화` 하기 위함이다.
+    이것이 command pattern 의 핵심이고 결합도 분리(decoupling) 이다.
+    만약 command.execute 에 실질적인 로직을 구현한다면 단일 책임 원칙(Single Responsibility Principle) 을 위반한다.
+    command 는 요청의 캡슐화와 실제 로직 수행이라는 두가지 책임이 가지게 된다.
+    만약 실질 로직 혹은 요청에 변화가 생기면 command 를 수정해야 한다.
+    또한 동일 로직을 다른 command 에 사용하고 싶으면 이를 복사하여 사용해야 하는데 receiver 를 사용한다면 다른 command 객체에 사용하기 쉽다.
+    smart command 객체도 있는데 확장과 수정이 없다면 command 객체 내 실질 로직을 구현할 수 있다.
+    간단한 로직이고 이를 재사용할 일이 없을 때 예외적으로 사용한다.
+    이렇게 하면 클래스 수가 감소되지만 원칙적으론 실질 로직을 receiver 에 구현한다.
   - `party mode` 여러 개체를 그룹화하여 동시에 처리
-    PartyCommand 는 여러 command 를 순차로 접근하여 execute 를 호출한다.  
+    PartyCommand 는 여러 command 를 순차로 접근하여 execute 를 호출한다.
     예를 들어 collection 에 command 객체를 저장하고 loop 를 통해 순차적으로 실행한다.
-- `adaptor pattern` target interface 와 주어진 interface 가 서로 다를 때 이를 이어주는 역할을 한다.  
-  이때 주어진 interface 를 `adaptee interface` 라 한다.  
-  target interface 를 구현하고 adaptee class 를 참조하여 원하는 기능을 구현한다.  
-  이것을 `adaptor` 라고 부른다.  
-  target 이나 adaptee 를 상속하지 않고 composite 을 하기에 유연성이 높다.  
-  target 과 adaptee 를 다중상속하여 adaptor 를 만드는 경우 `class adaptor` 라 부른다.  
-  composite 을 한 경우 `object adaptor` 라 부른다.  
+- `adaptor pattern` target interface 와 주어진 interface 가 서로 다를 때 이를 이어주는 역할을 한다.
+  이때 주어진 interface 를 `adaptee interface` 라 한다.
+  target interface 를 구현하고 adaptee class 를 참조하여 원하는 기능을 구현한다.
+  이것을 `adaptor` 라고 부른다.
+  target 이나 adaptee 를 상속하지 않고 composite 을 하기에 유연성이 높다.
+  target 과 adaptee 를 다중상속하여 adaptor 를 만드는 경우 `class adaptor` 라 부른다.
+  composite 을 한 경우 `object adaptor` 라 부른다.
 
 </details>
 
 ### Day 13
+
 <details>
 <summary>facade pattern(1)</summary>
 
-- `facade(외형, 겉모습) pattern` 수 많은 인터페이스로 인해 복잡한 상태일 때 통합 인터페이스로 묶는다.  
-예를 들어 영화를 본다 라고 하자.  
-스크린을 내린다 -> 프로젝터를 킨다 -> 프로젝터 입력을 스트리밍 플레이어로 설정한다 -> ... -> 영화를 재생한다.  
-클라이언트에서 영화를 본다 라는 작업을 한다면 많은 과정이 필요하고 복잡하다.  
-이 모든 것을 통합하여 간단한 인터페이스를 만드는 것이 `facade pattern` 이다.  
-facade interface 는 서브 시스템을 캡슐화하지 않는다.  
-그래서 클라이언트가 서브 시스템의 클래스가 필요하면 사용할 수 있다.  
-facade interface 는 하나의 서브 시스템 당 여러 개를 만들 수 있다.  
+- `facade(외형, 겉모습) pattern` 수 많은 인터페이스로 인해 복잡한 상태일 때 통합 인터페이스로 묶는다.
+  예를 들어 영화를 본다 라고 하자.
+  스크린을 내린다 -> 프로젝터를 킨다 -> 프로젝터 입력을 스트리밍 플레이어로 설정한다 -> ... -> 영화를 재생한다.
+  클라이언트에서 영화를 본다 라는 작업을 한다면 많은 과정이 필요하고 복잡하다.
+  이 모든 것을 통합하여 간단한 인터페이스를 만드는 것이 `facade pattern` 이다.
+  facade interface 는 서브 시스템을 캡슐화하지 않는다.
+  그래서 클라이언트가 서브 시스템의 클래스가 필요하면 사용할 수 있다.
+  facade interface 는 하나의 서브 시스템 당 여러 개를 만들 수 있다.
 - `decorator`, `adaptor`, `facade` 요약
   - `decorator` interface 를 바꾸지 않고 기능 추가
   - `adaptor` target interface 에 맞게 변경
@@ -257,8 +279,9 @@ facade interface 는 하나의 서브 시스템 당 여러 개를 만들 수 있
   - 메소드에 전달된 parameter
   - field variable
   - 메소드 안에 생성된 객체
-  - 위 4가지 이외 객체와 상호작용 하는 것은 결합도를 높인다.  
-  이를 위반하는 대표적인 예시로 체인 호출이 있다.  
+  - 위 4가지 이외 객체와 상호작용 하는 것은 결합도를 높인다.
+    이를 위반하는 대표적인 예시로 체인 호출이 있다.
+
   ```java
   // subsystem 과 subcomponent 의 구조를 알아야 한다.
   // 만약 이 중에 하나라도 변경이 일어난다면 이 메소드도 변경하는 일이 생길수도 있다.
@@ -269,78 +292,83 @@ facade interface 는 하나의 서브 시스템 당 여러 개를 만들 수 있
 </details>
 
 ### Day 14
+
 <details>
 <summary>template method pattern(1)</summary>
 
-- `template method pattern` 상위 클래스(혹은 abstract)에서 알고리즘의 기본적인 틀(template)을 메소드에 정의하며 하위 클래스에서 일부 구현을 할 수 있다.  
-알고리즘의 구조는 유지하고 이 중 몇몇 단계를 하위 클래스에서 재정의한다.  
-대부분의 코드를 재사용할 수 있어 개발하기 용이하다.  
-상속을 활용하는 것이라 코드 중복이 적고 알고리즘을 캡슐화한다.  
-template method 로 정의하면 일반적으로 `final` 을 붙인다.  
-상위 클래스에 추상 메소드를 선언하기 때문에 하위 클래스에서 반드시 구현을 해야 한다.  
-필요에 따라 재정의하는 `hook method` 도 있다.  
-- `strategy pattern` 앞선 패턴처럼 알고리즘을 캡슐화한다.  
-차이는 inheritance vs composition 이다.  
-전략 패턴은 알고리즘을 변경할 수 있다.
-- `hollywood principle` 고수준의 모듈이 저수준을 호출하며 그 반대는 불가하다.  
-그렇지 않으면 저수준의 모듈이 다른 고수준의 모듈에 의존하고 이를 반복하다 보면 의존성이 복잡해진다.  
-template method pattern 은 할리우드 원칙, 즉 `IoC(inversion of controll)` 을 가장 구체적이고 명확하게 구현하는 패턴이다.  
-예를 들어 `Arrays.sort` 는 `Comparable` interface 를 구현한 객체에 대해 사용할 수 있다.  
-고수준의 모듈(Arrays.sort)는 사용자가 구현한 저수준의 모듈(Comparable.compareTo) 을 호출한다.  
-일반적으로 사용자가 고수준의 모듈을 호출하여 사용하지만 위 경우 반대이다.
+- `template method pattern` 상위 클래스(혹은 abstract)에서 알고리즘의 기본적인 틀(template)을 메소드에 정의하며 하위 클래스에서 일부 구현을 할 수 있다.
+  알고리즘의 구조는 유지하고 이 중 몇몇 단계를 하위 클래스에서 재정의한다.
+  대부분의 코드를 재사용할 수 있어 개발하기 용이하다.
+  상속을 활용하는 것이라 코드 중복이 적고 알고리즘을 캡슐화한다.
+  template method 로 정의하면 일반적으로 `final` 을 붙인다.
+  상위 클래스에 추상 메소드를 선언하기 때문에 하위 클래스에서 반드시 구현을 해야 한다.
+  필요에 따라 재정의하는 `hook method` 도 있다.
+- `strategy pattern` 앞선 패턴처럼 알고리즘을 캡슐화한다.
+  차이는 inheritance vs composition 이다.
+  전략 패턴은 알고리즘을 변경할 수 있다.
+- `hollywood principle` 고수준의 모듈이 저수준을 호출하며 그 반대는 불가하다.
+  그렇지 않으면 저수준의 모듈이 다른 고수준의 모듈에 의존하고 이를 반복하다 보면 의존성이 복잡해진다.
+  template method pattern 은 할리우드 원칙, 즉 `IoC(inversion of controll)` 을 가장 구체적이고 명확하게 구현하는 패턴이다.
+  예를 들어 `Arrays.sort` 는 `Comparable` interface 를 구현한 객체에 대해 사용할 수 있다.
+  고수준의 모듈(Arrays.sort)는 사용자가 구현한 저수준의 모듈(Comparable.compareTo) 을 호출한다.
+  일반적으로 사용자가 고수준의 모듈을 호출하여 사용하지만 위 경우 반대이다.
 
 ### Done
-- [x] `classloader` 에 관하여
-    - jvm 핵심 요소 중 하나이며 `*.class` 를 읽어 메모리에 올린다.
-    - 정확히는 runtime 시 필요한 클래스를 지연 로딩한다.
-    - jvm 은 (class, classloader) 의 인스턴스 쌍으로 식별한다.
-    - 클래스 로딩 시 jvm 메소드 영역에 메모리를 할당 받는다.
+
+- [X]  `classloader` 에 관하여
+  - jvm 핵심 요소 중 하나이며 `*.class` 를 읽어 메모리에 올린다.
+  - 정확히는 runtime 시 필요한 클래스를 지연 로딩한다.
+  - jvm 은 (class, classloader) 의 인스턴스 쌍으로 식별한다.
+  - 클래스 로딩 시 jvm 메소드 영역에 메모리를 할당 받는다.
 
 </details>
 
 ### Day 15
+
 <details>
 <summary>iterator pattern(1)</summary>
 
-- `iterator pattern` collection 구현방법을 노출시키지 않고 모든 항목에 접근하는 방법 제공한다.  
-collection 내 모든 항목에 접근하는 건 iterator 객체가 담당한다.  
-이 패턴은 `factory method pattern` 과 상당히 유사하다.  
-- `single responsibility principle` 단일 책임 원칙은 하나의 클래스는 하나의 책임을 가져야 한다 이다.  
-만약 2개 이상의 책임이 있다면 클래스 변경 가능성이 늘어나기 때문이다.
-- `cohesion` 응집도 란 한 클래스 혹은 모듈이 얼마나 맡은 역할이 일관적인가 를 말한다.  
-응집도가 낮다는 것은 관련 없는 기능들이 모여 관리가 어렵다는 의미이다.
+- `iterator pattern` collection 구현방법을 노출시키지 않고 모든 항목에 접근하는 방법 제공한다.
+  collection 내 모든 항목에 접근하는 건 iterator 객체가 담당한다.
+  이 패턴은 `factory method pattern` 과 상당히 유사하다.
+- `single responsibility principle` 단일 책임 원칙은 하나의 클래스는 하나의 책임을 가져야 한다 이다.
+  만약 2개 이상의 책임이 있다면 클래스 변경 가능성이 늘어나기 때문이다.
+- `cohesion` 응집도 란 한 클래스 혹은 모듈이 얼마나 맡은 역할이 일관적인가 를 말한다.
+  응집도가 낮다는 것은 관련 없는 기능들이 모여 관리가 어렵다는 의미이다.
 
 </details>
 
 ### Day 16
+
 <details>
 <summary>composite pattern(1)</summary>
 
-- `composite pattern` 객체를 트리구조로 하여 부분-전체 계층 구조를 구현한다.  
-개별 객체와 복합 객체를 동일하게 사용할 수 있다.  
-예를 들어 메뉴판에 한식, 중식, 일식, 양식을 넣었다.  
-이때 양식에 디저트 메뉴를 넣고 싶다.  
-그럼 양식에는 요리와 디저트가 존재하고 디저트에는 또 여러 디저트들이 있어 트리구조가 된다.  
-모든 객체들이 동일한 인터페이스를 갖고 있어 다루기 편리하다.  
-다만 어떤 경우에는 불필요한 기능이 있어 사용시 조심해야 한다(이 경우 null 반환 혹은 아무 것도 안하기 혹은 exception 발생 후 처리).  
-이를 원하지 않는다면 서로 다른 인터페이스를 구현하는 경우도 있다.  
-안전한 composite pattern 이다.  
-거대하고 복잡한 트리 구조인 경우 특정 노드에 접근하기 위해 부모의 포인터를 갖고 있는 경우, 자식의 순서가 중요한 경우, 입력과 삭제 등을 고려해야 할 때 복잡한 관리 방법을 사용해야 한다.  
+- `composite pattern` 객체를 트리구조로 하여 부분-전체 계층 구조를 구현한다.
+  개별 객체와 복합 객체를 동일하게 사용할 수 있다.
+  예를 들어 메뉴판에 한식, 중식, 일식, 양식을 넣었다.
+  이때 양식에 디저트 메뉴를 넣고 싶다.
+  그럼 양식에는 요리와 디저트가 존재하고 디저트에는 또 여러 디저트들이 있어 트리구조가 된다.
+  모든 객체들이 동일한 인터페이스를 갖고 있어 다루기 편리하다.
+  다만 어떤 경우에는 불필요한 기능이 있어 사용시 조심해야 한다(이 경우 null 반환 혹은 아무 것도 안하기 혹은 exception 발생 후 처리).
+  이를 원하지 않는다면 서로 다른 인터페이스를 구현하는 경우도 있다.
+  안전한 composite pattern 이다.
+  거대하고 복잡한 트리 구조인 경우 특정 노드에 접근하기 위해 부모의 포인터를 갖고 있는 경우, 자식의 순서가 중요한 경우, 입력과 삭제 등을 고려해야 할 때 복잡한 관리 방법을 사용해야 한다.
 
 </details>
 
 ### Day 17
+
 <details>
 <summary>state pattern(1)</summary>
 
-- `state pattern` 객체의 내부 상태가 바뀜에 따라 객체의 행동을 바꿀 수 있다.  
-마치 객체의 클래스가 바뀐 것 같은 결과를 만들 수 있다.  
-상태를 별도의 클래스로 캡슐화하고 행동을 위임하여 내부 상태가 달라질 때마다 행동이 바뀔 수 있다.  
-덕분에 복잡한 조건문을 줄일 수 있다.  
-다만 상태가 여러 개이면 그에 따라 구현할 클래스가 많아진다.
-- `strategy pattern` 변하는 부분과 그렇지 않은 부분을 나눈다.  
-전자에 대한 인터페이스를 정의하고 클라이언트는 런타임 시 원하는 구현체를 선택하여 사용할 수 있다.  
-이를 통해 유연성을 높일 수 있다.
+- `state pattern` 객체의 내부 상태가 바뀜에 따라 객체의 행동을 바꿀 수 있다.
+  마치 객체의 클래스가 바뀐 것 같은 결과를 만들 수 있다.
+  상태를 별도의 클래스로 캡슐화하고 행동을 위임하여 내부 상태가 달라질 때마다 행동이 바뀔 수 있다.
+  덕분에 복잡한 조건문을 줄일 수 있다.
+  다만 상태가 여러 개이면 그에 따라 구현할 클래스가 많아진다.
+- `strategy pattern` 변하는 부분과 그렇지 않은 부분을 나눈다.
+  전자에 대한 인터페이스를 정의하고 클라이언트는 런타임 시 원하는 구현체를 선택하여 사용할 수 있다.
+  이를 통해 유연성을 높일 수 있다.
 - `strategy, state pattern`
   - **공통점**
     - 두 패턴은 inheritance 가 아닌 composition 을 이용한다.
@@ -348,44 +376,40 @@ collection 내 모든 항목에 접근하는 건 iterator 객체가 담당한다
     - 인터페이스를 참조하여 구현체를 동일한 방식으로 사용한다.
   - **차이점**
     - 전자는 사용자에 의해 구현체가 결정된다. 이들 간 서로의 존재를 모른다.
-    - 후자는 상태 객체 내부에 다른 상태 객체로 변환하는 과정이 있다.  
-    예를 들면 신호등 빨간불이 시간이 되면 초록불로 바뀐다.
+    - 후자는 상태 객체 내부에 다른 상태 객체로 변환하는 과정이 있다.
+      예를 들면 신호등 빨간불이 시간이 되면 초록불로 바뀐다.
 
 </details>
 
 ### Day 18
+
 <details>
 <summary>state pattern(2), solid</summary>
 
-- `state pattern` context 내부에 상태를 저장하며 각 상태마다 로직을 바꾸는 것은 복잡한 조건문이 필요하다.  
-그래서 상태에 대한 인터페이스를 정의하고 context 는 모든 상태를 참조한다(context 내부에 모든 상태 객체를 갖고 있다).  
-context 에는 상태를 전환하는 과정이 있다.  
-상태 클래스에는 context 를 참조한다.  
-조건이 되면 다음 상태로 전이를 context 에 요청한다.  
-context 는 모든 state 를 가져야 하기에 참조하고 state 는 상태 전이를 위해 context 를 참조한다.  
-이때 circular dependency 가 발생한다.  
+- `state pattern` context 내부에 상태를 저장하며 각 상태마다 로직을 바꾸는 것은 복잡한 조건문이 필요하다.그래서 상태에 대한 인터페이스를 정의하고 context 는 모든 상태를 참조한다(context 내부에 모든 상태 객체를 갖고 있다).context 에는 상태를 전환하는 과정이 있다.상태 클래스에는 context 를 참조한다.조건이 되면 다음 상태로 전이를 context 에 요청한다.context 는 모든 state 를 가져야 하기에 참조하고 state 는 상태 전이를 위해 context 를 참조한다.이때 circular dependency 가 발생한다.
   - `circular dependency` 개선안
     - 의존성 역전 원칙을 이용하여 context 에서 state transition 을 분리하여 state 가 이를 참조한다.
       - context 와 state 간 의존성을 낮출 수 있다.
-    - state 는 다음 state 만 결정하고 전이는 context 에서 한다.  
+    - state 는 다음 state 만 결정하고 전이는 context 에서 한다.
       state 는 context 를 알지 못해도 전이할 수 있다.
-    - third party 를 통해 context 와 state 를 완전히 분리시킨다.  
-      state 는 event 가 발생했다 를 third party 에 알리고(publish) 이것을 구독하는 manager 가 상태 전이를 한다.  
-    - 1, 3안은 비슷해보이지만 전자는 인터페이스를 통해 참조를 하고 state 가 다음 state 를 주입한다.  
-      후자는 중간에 third party 으로 간접 참조하며 이것으로 state 를 바꾼다.  
+    - third party 를 통해 context 와 state 를 완전히 분리시킨다.
+      state 는 event 가 발생했다 를 third party 에 알리고(publish) 이것을 구독하는 manager 가 상태 전이를 한다.
+    - 1, 3안은 비슷해보이지만 전자는 인터페이스를 통해 참조를 하고 state 가 다음 state 를 주입한다.
+      후자는 중간에 third party 으로 간접 참조하며 이것으로 state 를 바꾼다.
       대신 후자는 시스템을 복잡하게 만들어 event 가 어디서 생성되어 어디로 흘러가는지 알기 어렵다.
     - 상태 전이 규칙이 간단하다면 circular dependency 을 감수해도 좋다(느슨한 결합보다 구현의 편의를 챙기자).
     - 규칙이 복잡하면 의존성 순환을 끊고 단방향으로 설계하자.
 - `solid` oop 설계를 위한 원칙이다.
-- `liskov substitution principle` 하위 클래스는 상위를 대체할 수 있어야 한다.  
-oop 의 polymorphism 을 위해 설계 원칙을 의미한다.  
-상위 클래스에서 정의한 규칙(contract)을 하위에서 수정하면 안된다.  
-즉 상위 클래스는 하위의 구현과 상관없이 의도대로 작동해야 한다.  
-`instanceof` 사용하지 않아도 상위 타입으로 사용해도 된다.
-- `dependency inversion principle` 의존성 역전 원칙으로 상위 모듈은 하위에 맞춰 개발하고 메세지를 보낸다.  
-상위가 하위의 추상화된 객체를 참조한다면 하위는 이를 구현하게 된다.  
-이때 의존성이 역전되었다 라고 한다.  
-- `java covariance` 자기 자신과 하위 객체의 타입으로 바꿀 수 있는 성질이다.  
+- `liskov substitution principle` 하위 클래스는 상위를 대체할 수 있어야 한다.
+  oop 의 polymorphism 을 위해 설계 원칙을 의미한다.
+  상위 클래스에서 정의한 규칙(contract)을 하위에서 수정하면 안된다.
+  즉 상위 클래스는 하위의 구현과 상관없이 의도대로 작동해야 한다.
+  `instanceof` 사용하지 않아도 상위 타입으로 사용해도 된다.
+- `dependency inversion principle` 의존성 역전 원칙으로 상위 모듈은 하위에 맞춰 개발하고 메세지를 보낸다.
+  상위가 하위의 추상화된 객체를 참조한다면 하위는 이를 구현하게 된다.
+  이때 의존성이 역전되었다 라고 한다.
+- `java covariance` 자기 자신과 하위 객체의 타입으로 바꿀 수 있는 성질이다.
+
 ```java
 class Human {
     public Human self() {
@@ -410,57 +434,63 @@ class Korean extends Human {
   }
 } // Bad
 ```
+
 뿐만 아니라 이런 것도 가능하다.
+
 ```java
 List<Human> arr = List.of(new Korean(), new Human());
 ```
+
 generic 과 parameter type 에는 적용되지 않는다.
 
 </details>
 
 ### Day 19
+
 <details>
 <summary>proxy pattern(1)</summary>
 
 - `RMI(Remote Method Invocation)`
-  - client <-> stub <-> skeleton <-> server 
-  - 다른 힙 공간에 있는 객체를 불러올 수 없다.  
-  원격으로 원하는 객체를 사용하고 싶다.  
-  `stub` 은 client 가 마치 server 에 있는 객체라고 생각하여 참조하는 객체이다.  
-  즉, 실제 원하는 객체처럼 행동한다.  
-  client 에게 받은 요청을 직렬화하여 `skeleton` 에게 전달한다.  
-  `skeleton` 은 `stub` 과 `server` 간 연결해주는 객체로서 `stub` 이 요청을 server 가 인식할 수 있도록 바꿔준다.
+  - client <-> stub <-> skeleton <-> server
+  - 다른 힙 공간에 있는 객체를 불러올 수 없다.
+    원격으로 원하는 객체를 사용하고 싶다.
+    `stub` 은 client 가 마치 server 에 있는 객체라고 생각하여 참조하는 객체이다.
+    즉, 실제 원하는 객체처럼 행동한다.
+    client 에게 받은 요청을 직렬화하여 `skeleton` 에게 전달한다.
+    `skeleton` 은 `stub` 과 `server` 간 연결해주는 객체로서 `stub` 이 요청을 server 가 인식할 수 있도록 바꿔준다.
 - `proxy pattern` 특정 객체으로의 접근을 제어하는 대리인을 제공한다.
-- `virtual proxy` 객체 생성에 많은 연산이 필요한 경우 생성을 미룬다.  
-생성 전 혹은 중에 일부 요청을 대신 처리할 수 있고 생성 후에 요청을 전달한다.
-- `proxy` 를 잘 사용하기 위해선 multi-threading 이 필수이다.  
-만약 user 가 channel 에 접속해 모든 message 를 보여줄때 DB 에 message 를 요청하는 동안 application 은 멈춰있는 상태이다.  
-이러면 불편함을 느끼게 되므로 message 를 요청하는 thread 를 따로 만들고 불러올 때까지 대체 화면을 보여준다.  
-성공적으로 데이터를 전달받으면 화면에 띄워준다.  
-이 과정에서 proxy 와 multi-threading 이 필요하다.
+- `virtual proxy` 객체 생성에 많은 연산이 필요한 경우 생성을 미룬다.
+  생성 전 혹은 중에 일부 요청을 대신 처리할 수 있고 생성 후에 요청을 전달한다.
+- `proxy` 를 잘 사용하기 위해선 multi-threading 이 필수이다.
+  만약 user 가 channel 에 접속해 모든 message 를 보여줄때 DB 에 message 를 요청하는 동안 application 은 멈춰있는 상태이다.
+  이러면 불편함을 느끼게 되므로 message 를 요청하는 thread 를 따로 만들고 불러올 때까지 대체 화면을 보여준다.
+  성공적으로 데이터를 전달받으면 화면에 띄워준다.
+  이 과정에서 proxy 와 multi-threading 이 필요하다.
 
 ### Todo
-- [ ] file 저장 및 이동 원리
-- [ ] compiler, interpreter 에 대해서
-- [ ] virtual thread
-- [ ] fortran 개발 방식 알아보기
+
+- [ ]  file 저장 및 이동 원리
+- [ ]  compiler, interpreter 에 대해서
+- [ ]  virtual thread
+- [ ]  fortran 개발 방식 알아보기
 
 </details>
 
 ### Day 20
+
 <details>
 <summary>proxy pattern(2), review</summary>
 
-- `proxy pattern` proxy 는 객체를 대신한다.  
-객체에 대한 접근 권한을 제어해야 하는 경우가 있다.  
-예를 들어 인가를 받지 않은 요청은 처리하지 않거나 권한이 없는 객체가 어떤 기능 수행을 막는 경우(기능이 구현되어 있더라도)가 필요하다.  
-즉 객체에 따라 proxy 생성이 달라져야 한다.  
-동적으로 proxy 생성을 위해 reflect 를 이용할 수 있다.  
+- `proxy pattern` proxy 는 객체를 대신한다.
+  객체에 대한 접근 권한을 제어해야 하는 경우가 있다.
+  예를 들어 인가를 받지 않은 요청은 처리하지 않거나 권한이 없는 객체가 어떤 기능 수행을 막는 경우(기능이 구현되어 있더라도)가 필요하다.
+  즉 객체에 따라 proxy 생성이 달라져야 한다.
+  동적으로 proxy 생성을 위해 reflect 를 이용할 수 있다.
   ```java
   Person kim = getPerson("kim");
   Person authorized = getAuthorizedPerson(kim);
   authorized.doSomething(); // ok
-  
+
   Person lee = getPerson("lee");
   Person unAuthorized = getUnAuthorizedPerson(lee);
   unAuthorized.doSomething(); // RuntimeError
@@ -473,104 +503,107 @@ generic 과 parameter type 에는 적용되지 않는다.
   - firewall proxy 네트워크 자원으로의 접근 제어를 위함.
   - caching proxy 비용이 많이 드는 작업의 결과를 임시로 저장하고 여러 클라이언트에게 공유.
   - synchronization proxy 여러 스레드에서 접근 시 안전하게 처리를 위함.
-  - complexity hiding proxy facade 와 비슷하게 복잡도가 높은 클래스 집합을 낮춰준다.  
-  전자는 인터페이스 제공을 위한, 후자는 접근 제어를 위함.
+  - complexity hiding proxy facade 와 비슷하게 복잡도가 높은 클래스 집합을 낮춰준다.
+    전자는 인터페이스 제공을 위한, 후자는 접근 제어를 위함.
   - copy-on-write proxy 복사를 요청을 lazy 로 처리.
-- `proxy` 와 `decorator` pattern 은 비슷해 보인다.  
-전자는 접근 제어, 후자는 기능 추가.
-- `transparency` `composite pattern` 에서 node 와 leaf 를 구분하지 않고 같은 interface 를 구현했다.  
-이러면 `instanceof` 를 사용하지 않고 동일한 method 를 사용할 수 있었다.  
-투명성이란 composite 객체와 leaf 객체가 같은 interface 를 구현하여 동일한 객체로 다루는 성질이다.  
-단점은 잘못된 method 를 호출했을 때 runtimeError 가 발생할 수 있다.
-- `safety` composite 객체와 leaf 객체의 interface 를 분리하여 잘못된 method 호출을 막는 성질이다.  
-장점은 compile 시 오류를 발견할 수 있다.  
-단점은 `instanceof` 를 사용하는 번거로움이 있다.
+- `proxy` 와 `decorator` pattern 은 비슷해 보인다.
+  전자는 접근 제어, 후자는 기능 추가.
+- `transparency` `composite pattern` 에서 node 와 leaf 를 구분하지 않고 같은 interface 를 구현했다.
+  이러면 `instanceof` 를 사용하지 않고 동일한 method 를 사용할 수 있었다.
+  투명성이란 composite 객체와 leaf 객체가 같은 interface 를 구현하여 동일한 객체로 다루는 성질이다.
+  단점은 잘못된 method 를 호출했을 때 runtimeError 가 발생할 수 있다.
+- `safety` composite 객체와 leaf 객체의 interface 를 분리하여 잘못된 method 호출을 막는 성질이다.
+  장점은 compile 시 오류를 발견할 수 있다.
+  단점은 `instanceof` 를 사용하는 번거로움이 있다.
 
 </details>
 
 ### Day 21
+
 <details>
 <summary>review</summary>
 
-- `투명성, transparency` 이 유리창은 투명해서 안까지 잘 보인다. vs 유리창이 투명해서 있는지 몰랐다.  
-여기서는 후자 의미이다.  
-불투명(`opaque`) 하다면 클라이언트는 내부 구조를 알아야 하고 이에 맞춰야 한다.  
-반대로 중간에 프록시가 있던 없던 내부가 투명해서 구조를 몰라도 기존과 똑같이 하면 된다.  
-디자인 패턴에서 transparency 는 interface 뒤에 감춰진 복잡한 구조를 투명하게 하여 클라이언트가 모르도록 하는 것이다.
-- `stratege pattern` 변화하는 부분을 정의하고 캡슐화하여 다양한 로직을 바꿔쓸 수 있다.  
-클라이언트의 코드와 분리하여 독립적으로 변경할 수 있다.  
-예를 들면 결제 방법을 실물 카드였던 것을 휴대폰 결제로 바꿀 수 있다.  
-이 과정에서 `composition` 을 이용한다.
+- `투명성, transparency` 이 유리창은 투명해서 안까지 잘 보인다. vs 유리창이 투명해서 있는지 몰랐다.
+  여기서는 후자 의미이다.
+  불투명(`opaque`) 하다면 클라이언트는 내부 구조를 알아야 하고 이에 맞춰야 한다.
+  반대로 중간에 프록시가 있던 없던 내부가 투명해서 구조를 몰라도 기존과 똑같이 하면 된다.
+  디자인 패턴에서 transparency 는 interface 뒤에 감춰진 복잡한 구조를 투명하게 하여 클라이언트가 모르도록 하는 것이다.
+- `stratege pattern` 변화하는 부분을 정의하고 캡슐화하여 다양한 로직을 바꿔쓸 수 있다.
+  클라이언트의 코드와 분리하여 독립적으로 변경할 수 있다.
+  예를 들면 결제 방법을 실물 카드였던 것을 휴대폰 결제로 바꿀 수 있다.
+  이 과정에서 `composition` 을 이용한다.
 
 </details>
 
 ### Day 22
+
 <details>
 <summary>adaptor(2), MVC(1) pattern</summary>
 
-- `adaptor pattern` 공통 부모가 없어 추상화를 하지 못하는 경우가 있다.  
-interface 를 정의하고 객체를 인자를 받는 class 를 구현한다.  
+- `adaptor pattern` 공통 부모가 없어 추상화를 하지 못하는 경우가 있다.
+  interface 를 정의하고 객체를 인자를 받는 class 를 구현한다.
   ```java
   class TestAlpha {
       void speak() {
         System.out.println("speak !");
       }
   }
-  
+
   class TestBeta {
       void talk() {
         System.out.println("talk @");
       }
   }
-  
+
   interface Adaptor {
       void say() {}
   }
-  
+
   class TestAlphaAdaptor implements Adaptor {
       TestAlpha instance;
       TestAlphaAdaptor(TestAlpha instance) {
           this.instance = instance;
       }
-      
+
       @Override
       void say() {
           instance.speak();  
       }
   }
-  
+
   class TestBetaAdaptor implements Adaptor {
       TestBeta instance;
       TestBetaAdaptor(TestBeta instance) {
           this.instance = instance;
       }
-      
+
       @Override
       void say() {
           instance.talk();
       }
   }
-  
+
   ```
-- adaptor 의 장점은 서로 다른 객체들이 공통 부모가 있어서 추상화된 것처럼 사용할 수 있다.  
-또한 기존 코드를 수정하지 않고 계속 확장할 수 있다(`OCP`).  
-단점은 adaptor 가 필요하다면 모두 상속받아 구현해야 하므로 코드의 양이 늘어난다.  
-class 가 많아져 복잡해진다.
-- `Model, View, Controller pattern` 
-  - `Model` data, state, business logic 를 가진다.  
-  `observer pattern` 를 사용하여 state 가 변경되면 이를 구독한 controller, view 에게 전달한다.  
-  덕분에 이 둘에게 전혀 의존하지 않게 된다.  
-  새로운 model 은 기존의 view, controller 에 연결하기 위해 adaptor 를 만들면 된다.
-  - `View` model 의 data 를 화면에 보여준다.  
-  gui 복합 구성 요소들을 나타내고 `composite pattern` 을 사용한다.
-  - `Controller` user 의 입력을 받아 model 에게 전달한다.  
-  view 가 사용자의 입력을 받으면 이에 따라 controller 에게 전달한다.  
-  상황에 맞게 controller 가 호출된다.  
-  `strategy pattern` 을 사용한다.
+- adaptor 의 장점은 서로 다른 객체들이 공통 부모가 있어서 추상화된 것처럼 사용할 수 있다.
+  또한 기존 코드를 수정하지 않고 계속 확장할 수 있다(`OCP`).
+  단점은 adaptor 가 필요하다면 모두 상속받아 구현해야 하므로 코드의 양이 늘어난다.
+  class 가 많아져 복잡해진다.
+- `Model, View, Controller pattern`
+  - `Model` data, state, business logic 를 가진다.
+    `observer pattern` 를 사용하여 state 가 변경되면 이를 구독한 controller, view 에게 전달한다.
+    덕분에 이 둘에게 전혀 의존하지 않게 된다.
+    새로운 model 은 기존의 view, controller 에 연결하기 위해 adaptor 를 만들면 된다.
+  - `View` model 의 data 를 화면에 보여준다.
+    gui 복합 구성 요소들을 나타내고 `composite pattern` 을 사용한다.
+  - `Controller` user 의 입력을 받아 model 에게 전달한다.
+    view 가 사용자의 입력을 받으면 이에 따라 controller 에게 전달한다.
+    상황에 맞게 controller 가 호출된다.
+    `strategy pattern` 을 사용한다.
 
 </details>
 
 ### Day 23
+
 <details>
 <summary>network(1)</summary>
 
@@ -578,21 +611,21 @@ class 가 많아져 복잡해진다.
 - `LAN, Local Area Network` 건물 안이나 특정 범위로하는 네트워크
 - `WAN, Wide Area Network` 2개 이상의 LAN 을 연결한 네트워크
 - 네트워크 연결 방식
-  - `star` 허브나 스위치같은 중앙 제어 장치를 두고 1대1 로 연결.  
-  확장이 쉽고 장애 발견이 빠르다. 다만 중앙 장치가 고장나면 전체가 마비.  
-  버스형과 달리 각 장치들과 1대1로 연결되어 있어 데이터가 섞이지 않는다.  
-  - `ring` 인접한 노드끼리 연결하여 하나의 거대한 고리 모양.  
-  데이터 전송은 한 방향 혹은 양방향. 도시 간 연결.  
-  데이터 충돌이 없고 노드가 늘어도 성능 저하가 없다.  
-  하지만 하나의 연결이 끊기면 전부 마비.
-  - `bus` 하나의 공통 회선에 여러 장치들을 연결. 규모가 작은 네트워크에 적당.  
-  모든 데이터는 연결된 모든 장치에 공유된다. 보안에 취약하다.  
-  만약 두 장치가 동시에 데이터를 보낸다면 충돌이 일어나 다시 보내게 된다.  
-  이 과정에서 성능 저하가 발생한다.
-  - `mesh` 서로 다른 모든 노드를 연결. 연결 하나가 끊겨도 우회하여 통신 가능.  
-  병목 현상 해결 가능. 보안 수준 높음. 서비스가 절대 중단되면 안되는 경우에 사용.  
-  확장 및 유지 비용이 `N^2` 에 비례한다.  
-  `partial mesh` 중요한 노드 간 연결하고 덜 중요한 노드는 필요한 곳에만 연결.
+  - `star` 허브나 스위치같은 중앙 제어 장치를 두고 1대1 로 연결.
+    확장이 쉽고 장애 발견이 빠르다. 다만 중앙 장치가 고장나면 전체가 마비.
+    버스형과 달리 각 장치들과 1대1로 연결되어 있어 데이터가 섞이지 않는다.
+  - `ring` 인접한 노드끼리 연결하여 하나의 거대한 고리 모양.
+    데이터 전송은 한 방향 혹은 양방향. 도시 간 연결.
+    데이터 충돌이 없고 노드가 늘어도 성능 저하가 없다.
+    하지만 하나의 연결이 끊기면 전부 마비.
+  - `bus` 하나의 공통 회선에 여러 장치들을 연결. 규모가 작은 네트워크에 적당.
+    모든 데이터는 연결된 모든 장치에 공유된다. 보안에 취약하다.
+    만약 두 장치가 동시에 데이터를 보낸다면 충돌이 일어나 다시 보내게 된다.
+    이 과정에서 성능 저하가 발생한다.
+  - `mesh` 서로 다른 모든 노드를 연결. 연결 하나가 끊겨도 우회하여 통신 가능.
+    병목 현상 해결 가능. 보안 수준 높음. 서비스가 절대 중단되면 안되는 경우에 사용.
+    확장 및 유지 비용이 `N^2` 에 비례한다.
+    `partial mesh` 중요한 노드 간 연결하고 덜 중요한 노드는 필요한 곳에만 연결.
 - 구성 장치
   - `hub` 여러 장치를 연결.
   - `switch` 대역폭 확대.
@@ -601,20 +634,20 @@ class 가 많아져 복잡해진다.
   - `bridge` 다수의 네트워크 연결.
 - 통신 규약 모델
   - 데이터를 주고 받는 약속에 대한 모델 혹은 설계도.
-  - `OSI, Open Systems Interconnection 7 layers`  
-    7\. `application`  유저와 어플간의 소통.  
-    6\. `presentation` 데이터를 어떻게 표현할지 정의(암호화, 데이터 압축 등).  
-    5\. `session` 장치 간 연결, 관리, 종료.  
-    4\. `transport` 신뢰성 있고 정확한 데이터 전달.  
-    3\. `network` 네트워크 장치 간의 경로 선택과 데이터 전송.  
-    2\. `data link` 물리적 연결을 통해 오류 없는 데이터 전달.  
+  - `OSI, Open Systems Interconnection 7 layers`
+    7\. `application`  유저와 어플간의 소통.
+    6\. `presentation` 데이터를 어떻게 표현할지 정의(암호화, 데이터 압축 등).
+    5\. `session` 장치 간 연결, 관리, 종료.
+    4\. `transport` 신뢰성 있고 정확한 데이터 전달.
+    3\. `network` 네트워크 장치 간의 경로 선택과 데이터 전송.
+    2\. `data link` 물리적 연결을 통해 오류 없는 데이터 전달.
     1\. `physical` 전기 신호를 이용해 통신 케이블로 데이터 전달.
   - `TCP/IP, Transmission Control Protocol/Internet Protocol 4 layers`
-    - `OSI` 가 너무 복잡해 좀 더 단순해진 모델.  
-    4\. `application` `OSI` 7과 동일.  
-    3\. `transport` 데이터 전송 신뢰성 보장.  
-    2\. `internet` 물리적으로 데이터가 네트워크를 통해 어떻게 전송되는지 정의.  
-    1\. `network interface` 데이터를 전기 신호로 변환 후 전송.
+    - `OSI` 가 너무 복잡해 좀 더 단순해진 모델.
+      4\. `application` `OSI` 7과 동일.
+      3\. `transport` 데이터 전송 신뢰성 보장.
+      2\. `internet` 물리적으로 데이터가 네트워크를 통해 어떻게 전송되는지 정의.
+      1\. `network interface` 데이터를 전기 신호로 변환 후 전송.
 - `IP, Internet Protocol` 통신하기 위한 고유 주소. 네트워크 제공자가 부여. 하나만 주어진다.
 - `port` 하나의 ip 에 여러 어플리케이션이 사용한다. 이를 구분하는 번호.
 - `MAC, Media Access Control` 통신 장치 하드웨어에 부여된 고유 번호.
@@ -622,6 +655,7 @@ class 가 많아져 복잡해진다.
 </details>
 
 ### Day 24
+
 <details>
 <summary>network(2)</summary>
 
@@ -631,17 +665,45 @@ class 가 많아져 복잡해진다.
   - 전송: 헤더 + 데이터 -> `segment`
     - 포트 정보 추가
   - 네트워크: 헤더 + 헤더 + 데이터 -> `packit`
-    - 송수신자의 ip 정보 추가 
+    - 송수신자의 ip 정보 추가
   - 데이터 링크: 헤더 + 헤더 + 헤더 + 데이터 + 트레일러 -> `frame`
-    - 송수신자의 MAC 주소, 트레일러(데이터 무결성 검사) 추가 
-- `VPN, Virtual Private Network` 가상 사설망은 데이터를 좀 더 안전하게 보내기 위한 기술이다.  
-종류에 따라 적용되는 계층이 달라진다.
-- 물리 계층에서는 윗 계층에서 내려온 프레임을 비트로 바꾸고 디지털 신호로 바꾸어 보낸다.  
-수신자는 디지털 신호를 비트로 바꾼다. 이 계층에서는 아래 장치를 사용한다.
-  - `Repeater` 전기 신호 증폭 장치. 거리가 멀어지면 에너지가 손실되어 자연스럽게 신호가 감쇠된다. 
-  - `Hub` 전송되는 데이터 신호를 복원 혹은 증폭하고 하나의 입력을 여러 장치에게 분배 및 확장을 지원한다.  
-  리피터는 1대1 통신만 가능하고 허브는 여러 장치와 가능하기에 허브를 많이 사용한다.
-- 데이터 링크 계층은 이전 계층의 비트들을 의미있는 묶음(프레임)으로 만든다.  
-여기서부터 비트는 바이트 배열에 저장된다.
+    - 송수신자의 MAC 주소, 트레일러(데이터 무결성 검사) 추가
+- `VPN, Virtual Private Network` 가상 사설망은 데이터를 좀 더 안전하게 보내기 위한 기술이다.
+  종류에 따라 적용되는 계층이 달라진다.
+- 물리 계층에서는 윗 계층에서 내려온 프레임을 비트로 바꾸고 디지털 신호로 바꾸어 보낸다.수신자는 디지털 신호를 비트로 바꾼다. 이 계층에서는 아래 장치를 사용한다.
+  - `Repeater` 전기 신호 증폭 장치. 거리가 멀어지면 에너지가 손실되어 자연스럽게 신호가 감쇠된다.
+  - `Hub` 전송되는 데이터 신호를 복원 혹은 증폭하고 하나의 입력을 여러 장치에게 분배 및 확장을 지원한다.
+    리피터는 1대1 통신만 가능하고 허브는 여러 장치와 가능하기에 허브를 많이 사용한다.
+- 데이터 링크 계층은 이전 계층의 비트들을 의미있는 묶음(프레임)으로 만든다.
+  여기서부터 비트는 바이트 배열에 저장된다.
+
+</details>
+
+### Day 25
+
+<details>
+<summary>network(3), data link layer of osi</summary>
+
+- L2: 받은 데이터를 프레임으로 분할하고 MAC 주소로 어떤 장비로 보낼지 확인한다.
+  - 반이중 방식(옛날 방식): 데이터를 받고 있으면 보낼 수 없다.  
+    여러 랜 케이블을 쓸 수 있지만 중앙 장치가 허브라면 반이중으로 동작한다.  
+    1번 > 2번에게 데이터를 보내면 나머지 모든 장치에게도 데이터가 보내진다.  
+    물리적으로 여러 회선을 쓰더라도 논리적으로 하나의 회선을 쓰는 방식이다.  
+  - 전이중 방식(요즘 방식): 중앙장치가 스위치라면 1 > 2번에게 보낼 수 있는 회선을 생성할 수 있다.  
+    덕분에 3 > 4번으로 보낼 수 있다.
+- 데이터를 받을때 다음과 같은 규칙으로 신호 간 충돌을 방지한다.
+  `ENQ` 데이터 전송 시작  
+  `ACK` 확인  
+  `데이터 송신`  
+  `ACK` 확인  
+  `EOT` 전송 끝
+- 만약 받은 데이터에 문제가 생겼다면 이를 확인할 수 있는 방법이 있다.  
+  `parity check` 수신자에게 보내는 최종 데이터 1의 개수를 짝수 혹은 홀수로 보낼지 미리 약속하고 `parity` 비트를 채워 보낸다.  
+- `Ethernet` 다수의 컴퓨터, 허브, 스위치 등을 하나의 인터넷 케이블에 연결한 네트워크 구조.  
+  `CSMA/CD, Carrier Sense Multiple Access/Collision Detection` 프로토콜 사용. 현재는 잘 사용하지 않음.  
+- `MAC` 주소 랜카스에 할당된 값이다. 전세계에 하나만 존재한다. 6바이트(48비트)로 구성된다.  
+  앞의 3바이트는 제조사 고유값, 나머지 3바이트는 제조사가 부여한 고유값.  
+  전송을 위해 MAC 주소가 필요하다.  
+  `ARP, Address Resolution Protocol` IP 주소에 해당하는 MAC 주소를 매핑하기 위한 프로토콜이다.
 
 </details>

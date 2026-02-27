@@ -837,3 +837,42 @@ servlet container 를 jvm 위에 올렸다가 내렸다가... 비효율적이다
   - ...
 
 </details>
+
+<details>
+<summary>2026-02-27</summary>
+
+| Integer                 | int       |
+|-------------------------|-----------|
+| reference type          | primitive |
+| heap memory             | stack     |
+| nullable                | nonnull   |
+| impossible to calculate | possible  |
+
+- 참조 무결성
+  - 테이블 간 관계가 일관되게 유지하도록 보장하는 성질.
+  - 외래키가 참조하는 데이터가 삭제 되었을 때 일관성과 무결성 유지하기 위함.
+  - `cascade`
+    - 삭제 시 참조하는 데이터도 삭제.
+    - 참조하고 있으면 삭제 불가.
+    - 삭제 시 null 로 시정.
+- 인덱스
+  - 검색 성능이 좋은 자료구조. 원하는 데이터를 빠르게 찾을 수 있음.
+  - 종류
+    - `B-tree`, `Hash`, `GiST`, `GIN`, `BRIN`, ...
+  - 생성
+    - where 에 자주 등장하는 컬럼.
+    - 조인 키로 사용되는 컬럼.
+    - order/group by 에 사용되는 컬럼.
+    - distinct 자주 적용되는 컬럼.
+    - like "value%" 는 앞부분 대응하는 경우를 찾는데 효율이 좋음.
+      - like "%value%" 중간에 'value' 가 있는 단어를 찾는 것은 결국 모든 글자를 비교하는 것과 같음.
+  - 복합 인덱스
+  - 인덱스 생성 시 관련 테이블을 만들어 DB 전체 용량이 커짐. 꼭 만들어야 할 컬럼만.
+  - insert, update, delete 가 잦다면 인덱스 최소화.
+  - `PK`, `FK`, `unique` 는 자동으로 인덱스 생성.
+- 역정규화
+  - 조인은 매우 비싼 연산.
+  - 정규화한 테이블들을 연결하여 거대한 테이블 운영.
+  - 물론 무결성 위험이 있지만 조회 성능 대폭 상승.
+
+</details>

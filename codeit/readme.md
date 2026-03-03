@@ -179,7 +179,7 @@ jsp 에는 html, css, js, java 를 사용할 수 있다.
 ```groovy
 plugins {
   // java project 임을 알린다, compiler 연결, .jar 만들 수 있다.
-  id 'java`
+  id 'java'
   // springboot application 으로 만들어 준다, .jar 를 만든다.
   id 'org.springframework.boot' version '3.2.0'
   // springboot 가 검증한 library version 을 자동으로 맞춰준다.
@@ -788,6 +788,13 @@ servlet container 를 jvm 위에 올렸다가 내렸다가... 비효율적이다
 </details>
 
 <details>
+<summary>2026-02-24</summary>
+
+- `Richardson` ?? 
+
+</details>
+
+<details>
 <summary>2026-02-25</summary>
 
 - `DataBaseManagementSystem` DB 라는 데이터 집합에 동시에 접근할 수 있도록 관리해주고 무결성과 영속성을 지원하는 소프트웨어이다.  
@@ -889,5 +896,45 @@ servlet container 를 jvm 위에 올렸다가 내렸다가... 비효율적이다
   - 조인은 매우 비싼 연산.
   - 정규화한 테이블들을 연결하여 거대한 테이블 운영.
   - 물론 무결성 위험이 있지만 조회 성능 대폭 상승.
+
+</details>
+
+<details>
+<summary>2026-02-27</summary>
+
+- `SQL` 기반 vs `ORM, Object Related Mapping`
+  - `MyBatis`, `Spring JDBC` vs `JPA`, `Spring data JPA`
+    - `MyBatis` SQL 과 java 를 연결. 쿼리 최적화가 필요할 때 용이. XML 로 정의. SQL 주도권이 개발자에게 있음.
+    - 전자는 메모리 효율이 높다. 결과값을 java 가 관리(GC 에 등록).
+    - 후자는 결과값을 영속성 컨텍스트에 저장하고 복사본 생성(차이가 발생하면 원본과 비교하기 위함).
+    - 일회성 데이터를 가져올 때 전자를 사용해야 한다.
+  - SQL 직접 작성 vs 객체 기반 매핑
+  - 반복 코드 많음 vs 생산성 높음, 유지 보수 용이
+  - 리포트, 통계, 튜닝 vs 업무 로직, 도메인 모델링
+- `Java Persistence API` java 에서 구현된 표준 ORM 기술 명세.  
+인터페이스를 제공하며 실제 구현은 `Hibernate`.
+- `persistence context` 객체 상태 관리 및 DB 동기화
+  - snapshot 저장소
+    - 1차 캐쉬: 객체 저장
+    - 1차 캐쉬와 비교하기 위해 원본(snapshot) 보관. transaction 이 끝나면 비교하여 DB 에 저장(update query 생성).
+    - 쓰기 지연 SQL 저장소: 객체에 대한 동작들에 대응하는 SQL 을 저장(예: 객체 생성 -> insert into).
+  - entity manager 참조
+    - context 를 관리하는 entity manager 를 참조하며 이를 통해 DB connection 을 획득.
+  - lazy loading proxy
+    - 객체를 바로 생성하지 않고 proxy 를 생성한다. 실제 데이터가 필요할 때 연산을 한다.
+- 비유를 하자면 1차 캐쉬는 stack, 2차 캐쉬는 heap.
+- `entityManager.persist()` 객체를 영속화(1차 캐쉬에 저장 및 sql 저장).
+- `entityManager.commit()` snapshot 과 비교하여 변경 사항이 있는지 확인(`dirty check`).  
+변경 사항이 있으면 update query 를 sql 저장소에 저장.  
+이 후 DB 에 SQL 를 보내 실행(flush) 및 commit.
+- 새로운 객체 생성은 영속화 되지 않아 commit 해도 DB 에 반영되지 않음.  
+반드시 생성하면 영속화 해야 한다.  
+하지만 너무 남발하면 안된다.  
+예를 들어 객체 생성 > 영속화 > 업데이트 > 커밋 vs 객체 생성 > 업데이트 > 영속화 > 커밋  
+전자보다 후자처럼 해야 한다.
+- 객체를 가져오면 자동으로 영속화 된다.  
+영속화는 context 가 객체를 추적하고 있다는 의미.  
+실제 값을 참조하기 전까지 DB 에서 데이터를 가져오지 않음(lazy loading).  
+즉 알맹이 없는 껍데기 객체.
 
 </details>

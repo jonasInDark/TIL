@@ -773,6 +773,21 @@ servlet container 를 jvm 위에 올렸다가 내렸다가... 비효율적이다
 </details>
 
 <details>
+<summary>2026-02-23</summary>
+
+- `SOAP, Simple Object Access Protocol` vs `REST`
+  - 데이터 전송 규약
+  - 다른 언어, 다른 플랫폼 간 통신할 수 있는 프로토콜.
+  - 전자는 엄격한 규칙에 의해 통신이 진행된다.
+    - 후자는 이에 비교하면 가이드 라인 정도.
+  - xml 기반으로 작성되며 http, smtp, ftp 등 여러 프로토콜 사용할 수 있다.
+    - 후자는 주로 http/https 을 이용.
+  - 전자는 보안이 중요한 경우에 사용한다. 브라우저에 캐시 저장을 할 수 없다. 상태를 가진다. 
+  - 엄격한 규칙에 DB 의 ACID 가 포함된다.
+
+</details>
+
+<details>
 <summary>2026-02-25</summary>
 
 - `DataBaseManagementSystem` DB 라는 데이터 집합에 동시에 접근할 수 있도록 관리해주고 무결성과 영속성을 지원하는 소프트웨어이다.  

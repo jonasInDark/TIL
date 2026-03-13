@@ -1037,3 +1037,27 @@ tasks.register("hello") {
       - ...
 
 </details>
+
+<details>
+<summary>2026-03-13</summary>
+
+## `Findex` 프로젝트 D-6
+- 나의 역할
+  - [회의록 작성](https://innovative-snap-cf9.notion.site/260313-322cef5b9406800ab3fac9c8d1246a68?pvs=143)
+
+- `gradle` 의 역할
+  - jvm 위에서 동작한다.
+  - java compiler 에게 compile 을 지시한다.
+  - 수정된 파일만 골라서 compile 한다. 매번 모든 파일을 compile 하지 않아 속도가 빠르다.
+  - compile option 을 한 곳에서 관리할 수 있다.
+- `partial index`
+  - 조건을 걸어 index 생성할 수 있다.
+  - soft delete 를 위해 사용된다.
+- `WebClient`
+  - Http request 생성을 위해 사용된다.
+  - 우리 프로젝트는 외부 api 에 데이터를 요청하여 DB 에 저장한다.
+- `inner join` vs `left join`
+  - 전자는 키 값이 동일한 데이터만 병합한다.
+  - 후자는 왼쪽 테이블의 데이터는 모두 보존하되 오른쪽 테이블의 키 값과 일치하는 경우만 병합하고 아닌 데이터들은 null 값으로 채운다.
+
+</details>

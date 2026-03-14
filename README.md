@@ -707,3 +707,94 @@ generic 과 parameter type 에는 적용되지 않는다.
   `ARP, Address Resolution Protocol` IP 주소에 해당하는 MAC 주소를 매핑하기 위한 프로토콜이다.
 
 </details>
+
+### Day 26
+
+<details>
+<summary>architecture</summary>
+
+- `Transaction`
+  ```java
+  @Transactional
+  public void save() {
+      sleep(10);  // (1)
+      repository.save(entity);  // (2)
+      sleep(10);  // (3)
+  }
+  ```
+  - tx 이 시작하면 DB lock 은 몇 초간 유지될까
+  - (1): lock -> x
+  - (2): 저장하는 동안 lock
+  - (3): 10초 간 lock 유지 후 tx 종료
+- tx 가 시작되면 DB connection pool 의 자원을 점유한다.  
+따라서 반드시 필요한 경우에만 tx 를 추가하자.
+- 새로운 객체가 생성되면 `repository.save()` 를 해야 한다.  
+영속화되지 않은 객체이므로(context 에 없으므로) 추적이 불가능하다.
+- 기존의 객체를 불러오고 업데이트를 한다. `repository.save()` 하지 말자.  
+새로운 객체인지 기존의 것인지 확인하는 과정이 있다.  
+`dirty checking` 을 이용하자. tx 가 종료되면 원본과 비교하여 update query 를 생성한다.
+- 사실 위의 경우는 성능에 미미한 영향을 끼친다. 객체의 필드가 많으면 원본과 비교 연산이 많아진다.  
+메모리와 cpu 를 좀 더 사용한다. 또한 query 가 길어지고 응답 parsing 연산이 커지게 되어 cpu 를 더 사용한다.
+- 이보다 더 영향이 큰 건 필드의 자료형이다. TEXT, JSON, ... 의 크기가 크다면 별도의 저장 영역에 기록된다.  
+가져올 때 추가적인 disk i/o 가 발생한다.  크키가 커서 메모리도 더 많이 사용한다.  
+gc 부하가 커져 서버가 불안정해진다.
+- 가장 큰 영향은 `OneToMany`, `ManyToOne` 관계의 entity 를 불러올 때 이다.  
+DB connection, network i/o(`N+1 problem`) 문제가 발생한다.  
+사실 `N+1` 문제가 가장 영향을 많이 준다.
+- `N+1` 문제
+  - 주로 `OneToMany`, `ManyToOne` 관계에서 발생한다.
+  - entity A 를 조회한다. 
+  - A 는 내부에 entity B를 N개 가지고 있다.
+  - jpa 는 A 를 조회하는 query 를 생성한다. 하지만 B 를 조회하는 query 는 생성되지 않는다.
+  - A 의 필드를 조회할 때 query 를 보내 값을 매핑한다.
+  - 이때 B 를 조회하는 또 다른 query 를 생성해 보낸다.
+  - 결과적으로 A 를 조회하는 query 1개 + B 를 조회하는 query N개가 생성된다.
+  - `Lazy loading` 이라서 이 문제가 발생한다고 생각할 수 있다.
+  - `Eager loading` 은 조회 즉시 값을 가져온다.  
+  하지만 A 를 가져오는 query 만 생성하고 B 를 가져오는 query 를 또 다시 생성한다.  
+  즉 query 보내는 시점을 당긴 것 뿐이다...
+  - 조회뿐만 아니라 삭제 시 `cascading` 인 경우에도 발생한다.
+  - solution
+    - `fetch join`
+      - A 를 조회할 때 B 도 포함하는 inner join query 를 생성한다(query 1개로 해결).  
+      이때 A 는 proxy 가 아니라 값이 들어 있다. 조회 즉시 값을 불러온다.
+      - 예를 들어 아래와 같은 경우가 있다.  
+        ```java
+        Optional<Channel> findById(UUID channelId); // (1)
+        List<Channel> findAll(); // (2)
+        ```
+        - 하나의 channel 에는 N개의 message 를 가진다.
+        - (1) 의 경우 하나의 channel 을 가져오면 N개의 message 를 가져온다(문제 없음).
+        - (2) 의 경우 하나의 channel 에 N개의 message 가 대응한다.  
+        DB 에는 (channel_1, message1), (channel_1, message_2), ... 가 생성된다.
+        jpa 가 이 결과를 보면 channel_1 이 여러개이므로 {channel_1, channel_1, ... } 을 반환해준다.  
+        즉, 데이터가 뻥튀기 되는 상황이 생긴다.  
+        이를 막기 위해 fetch join 을 추가한 query 에 `distinct` 를 추가해야 한다.
+      - `join` 과의 차이
+        - ```sql
+          select c from channel c join c.message m;
+          ```
+        - 위 query 역시 데이터 뻥튀기가 발생한다.
+        - 또한 channel 의 값만 매핑해주고 message 는 가져오지 않는다.  
+        channel 과 연관된 entity 를 영속화하지 않는다.  
+        그래서 잘 사용하지 않는다.
+      - 또 다른 문제는 fetch join 을 최대 하나만 가능하다.  
+      channel 에는 여러 user 가 연관되어 있다.  
+      channel 을 조회할 때 동시에 message, user 에 fetch join 을 할 수 없다.
+    - `batch size` 
+- `OneToOne` 양방향 
+  - user 와 user_status 는 1대1 양방향 매핑이라 하자.
+  - 연관관계의 주인은 user_status 이다.
+  - lazy loading 일 때 user_status 를 조회하자.  
+  user_status 내 user 에 proxy 를 넣는다.
+  - 하지만 user 를 조회할 때 user_status_id 가 없어 user_status 의 table 을 조회해야 한다.  
+  이왕 조회하는거 모두 조회해서 가져온다.  
+  그리하여 eager loading 으로 동작하게 된다.
+- `plain jar` vs `bootJar`
+  - 전자는 내가 개발한 소스코드만 담긴다.  
+  후자는 의존성과 내장 톰캣을 포함한다.
+  - 전자는 라이브러리 배포용으로 사용된다. 의존성이 없기 때문에 다른 곳에서 사용할 수 있다.  
+  후자는 단독으로 실행할 수 있는 상태이다.
+  - 전자는 가볍고 후자는 무겁다
+
+</details>

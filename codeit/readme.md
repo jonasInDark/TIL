@@ -1244,3 +1244,43 @@ tasks.register("hello") {
   - railway 에서 자동으로 내려받는다.
 
 </details>
+
+<details>
+<summary>2026-03-23</summary>
+
+- `Transaction`
+  - `Isolation`
+  - tx 의 원칙 중 하나이며 tx 간 격리를 말하며 여러 tx 가 접근할 때 생기는 문제를 해결할 수 있다.
+    - `Dirty Read`
+      - commit 되지 않은 데이터를 다른 tx 가 접근하는 경우.
+      - 만약 rollback 이 된다면 잘못된 데이터를 읽게 된다.
+    - `Non-repeatable Read`
+      - 같은 조회 쿼리를 보냈는데 결과가 다른 경우.
+      - 돈과 관련된 서비스의 경우 큰 문제가 발생하므로 해결해야 된다.
+    - `Phantom Read`
+      - 같은 범위 조회 쿼리를 보냈는데 없던 데이터가 생기는 경우.
+      - `select` 이후 `Select ... for Update` 하는 경우 발생한다. 
+  - `Serializable`
+    - lock 을 걸어 조회도 쓰기도 통제한다.
+    - 위 3가지 문제가 발생하지 않는다.
+    - deadlock 가능성이 높다.
+    - 정합성을 보장한다.
+  - `Repeatable read`
+    - DB 조회를 한다.
+    - tx 가 끝나지 않은 상황에 또 다른 tx 가 등장한다.
+    - 기존 tx 는 이후 tx 가 존재한다면 `undo log` 를 확인하여 조회를 한다.
+    - `undo log` 는 데이터 수정 시 원본이 저장되며 rollback 시 DB 에 덮어씌운다.
+    - 이 과정에서 여러 버전이 생길 수 있는데 과거 버전(`MVCC, Multi-Version Concurrency Control`)을 보여주어 일관성을 유지한다.
+    - 이 정책은 데이터 저장을 막지 않는다.
+    - 조회 -> 또 다른 tx 에 의한 데이터 삽입 -> 또 다시 조회 시 추가된 데이터가 발생되는데 이를 `Phantom Read` 라 한다.
+    - 하지만 데이터 삽입은 `undo log` 에 포함되지 않아 과거 버전을 참조할 수 있다.
+  - `Read committed`
+    - commit 데이터만 읽도록 한다.
+    - `Dirty Read` 방지하지만 나머지는 발생.
+    - `PostgreSQL` 기본값.
+  - `Read uncomitted`
+    - 가장 낮은 격리 수준.
+    - 위 3가지 문제가 발생.
+    - 정확성 보다 속도가 더 중요한 경우 사용.
+
+</details>

@@ -98,26 +98,28 @@
 
 @Service
 public class UserService {
-    // ❌ 매우 위험! 모든 사용자가 이 변수를 공유함
-    private String currentUserName;
 
-    public void login(String name) {
-        this.currentUserName = name; // A 사용자의 이름이 저장됨
-        // 잠시 로직 처리 중... (B 사용자가 그 사이에 login 호출 시 name이 바뀜)
-        System.out.println(this.currentUserName + "님 환영합니다.");
-        // 결과: "A님 환영합니다"가 나와야 하는데 "B님 환영합니다"가 나올 수 있음
-    }
+  // ❌ 매우 위험! 모든 사용자가 이 변수를 공유함
+  private String currentUserName;
+
+  public void login(String name) {
+    this.currentUserName = name; // A 사용자의 이름이 저장됨
+    // 잠시 로직 처리 중... (B 사용자가 그 사이에 login 호출 시 name이 바뀜)
+    System.out.println(this.currentUserName + "님 환영합니다.");
+    // 결과: "A님 환영합니다"가 나와야 하는데 "B님 환영합니다"가 나올 수 있음
+  }
 }
 
 @Service
 public class UserService {
-    // ✅ 안전: 공유되는 멤버 변수가 없음
-    public void login(String name) {
-        // name은 인자로 들어와 이 메서드 안에서만 살아있는 "지역 변수"임
-        String welcomeMessage = name + "님 환영합니다.";
-        System.out.println(welcomeMessage);
-        // 결과: 100명이 동시에 접속해도 각자의 name 값이 유지됨
-    }
+
+  // ✅ 안전: 공유되는 멤버 변수가 없음
+  public void login(String name) {
+    // name은 인자로 들어와 이 메서드 안에서만 살아있는 "지역 변수"임
+    String welcomeMessage = name + "님 환영합니다.";
+    System.out.println(welcomeMessage);
+    // 결과: 100명이 동시에 접속해도 각자의 name 값이 유지됨
+  }
 }
 ```
 
@@ -582,9 +584,11 @@ tasks.register("hello") {
 - `/hello.html` 을 요청해도 `HandlerMapping` 을 호출한다.  
   모든 요청은 반드시 정해진 순서를 따르기 때문이다.
 - static resource 설정  
-  `/src/main/resources` 를 바탕으로 `/static`, `/public`, `/resources`, `/META-INF/resources` 내 resource 를 불러올 수 있다.  
+  `/src/main/resources` 를 바탕으로 `/static`, `/public`, `/resources`, `/META-INF/resources` 내 resource
+  를 불러올 수 있다.  
   예를 들면 `/static/css/hello.css` 를 요청하기 위해 `http://localhost:8080/css/hello.css` 로 하면 된다.
-- path 를 추가하고 싶다면 `.yml` 에 다가 `spring.web.resources.static-locations: classpath:/custom-location/`  라고 하면 된다.
+- path 를 추가하고 싶다면 `.yml` 에 다가 `spring.web.resources.static-locations: classpath:/custom-location/`
+  라고 하면 된다.
 - `Classpath` app 실행 시 모든 `.class` 를 다 메모리에 올리지 않는다.  
   runtime 시 필요할 때 불러오는데 원하는 class 가 어디있는지에 대한 경로 집합을 `Classpath` 라 한다.
 - java 는 gc 가 있어 메모리 관리를 하지 않아도 된다.  
@@ -857,7 +861,8 @@ tasks.register("hello") {
 <details>
 <summary>2026-02-26</summary>
 
-- `application/octet-stream` request 를 보낼 때 content-type 지정하지 않거나 브라우저가 파일의 확장자를 모르는 경우(예: profile.dat)
+- `application/octet-stream` request 를 보낼 때 content-type 지정하지 않거나 브라우저가 파일의 확장자를 모르는 경우(예:
+  profile.dat)
   `application/octet-stream` 으로 보낸다.  
   `octet`(8비트) 즉 데이터의 흐름이라는 뜻으로 내가 보내는 파일이 뭔지 모르니 데이터 덩어리 자체로 보낸다 라는 의미이다.  
   모든 종류의 바이너리 파일 혹은 알 수 없는 데이터.
@@ -1084,7 +1089,7 @@ tasks.register("hello") {
   <summary>우리가 가져올 데이터는 다음과 같다.</summary>
 
   | 이름             | 설명                         |
-                  |:---------------|:---------------------------|
+                    |:---------------|:---------------------------|
   | lsYrEdVsFltRt  | 	지수의 전년말대비 등락율             |
   | basPntm        | 	지수를 산출하기 위한 기준시점          |
   | basIdx         | 	기준시점의 지수값                 |
@@ -1113,7 +1118,7 @@ tasks.register("hello") {
   <summary>지수정보는 지수데이터의 메타 데이터이며 다음과 같이 구성된다.</summary>
 
   | 필드명                 | 정보        | 설명                                    | 타입                 | 제약조건 |
-        |:--------------------|:----------|:--------------------------------------|:-------------------|:-----|
+          |:--------------------|:----------|:--------------------------------------|:-------------------|:-----|
   | Id                  | 	지수 정보 ID | 	지수 정보 ID                             | 	Integer           | 	PK  |
   | IndexClassification | 	지수 분류명   | 	지수 분류 이름                             | 	String, NOT NULL  | 	UK  |
   | IndexName           | 	지수명      | 	지수 이름                                | 	String, NOT NULL  | 	UK  |
@@ -1129,7 +1134,8 @@ tasks.register("hello") {
 
 - 공통 설정
     - 모든 팀원이 동일한 환경에서 개발하기 위해 빌드 환경을 정의
-    - [Google Java convention](https://google.github.io/styleguide/intellij-java-google-style.xml) 적용
+    - [Google Java convention](https://google.github.io/styleguide/intellij-java-google-style.xml)
+      적용
 - 공공데이터 API 요청을 위한 WebClient 설정
     - 외부 API 요청을 위한 WebClient 설정
 - 지수정보 데이터에 대한 CRUD
@@ -1168,52 +1174,52 @@ tasks.register("hello") {
             - 보관해야 하는 의미가 없는 경우 물리적으로 삭제한다.
     - Soft Delete 를 하기 위한 과정은 다음과 같다.
         - 공공데이터 API 에 요청하여 원본 데이터를 저장한다.
-      
+
           | ID | 지수 분류명  | 지수 명 | 소스타입     | 삭제 여부  |
-          |----|---------|------|----------|--------|
+                    |----|---------|------|----------|--------|
           | 1  | KRX 시리즈 | 철강   | OPEN_API | ACTIVE |
-  
+
         - 유저가 같은 지수 분류명, 지수 명으로 생성하려 하지만 기존에 등록되어 있어 생성할 수 없다.
         - 유저가 데이터를 삭제한다
-      
+
           | ID | 지수 분류명  | 지수 명 | 소스타입     | 삭제 여부   |
-          |----|---------|------|----------|---------|
+                    |----|---------|------|----------|---------|
           | 1  | KRX 시리즈 | 철강   | OPEN_API | DELETED |
 
         - 유저가 같은 지수 분류명, 지수 명으로 생성한다. 기존에 등록되어 있지만 삭제되어 있어 생성할 수 있다.
-  
+
           | ID | 지수 분류명  | 지수 명 | 소스타입     | 삭제 여부   |
-          |----|---------|------|----------|---------|
+                    |----|---------|------|----------|---------|
           | 1  | KRX 시리즈 | 철강   | OPEN_API | DELETED |
           | 2  | KRX 시리즈 | 철강   | USER     | ACTIVE  |
-  
+
         - 유저가 데이터를 삭제한다.
-  
+
           | ID | 지수 분류명  | 지수 명 | 소스타입     | 삭제 여부   |
-          |----|---------|------|----------|---------|
+                    |----|---------|------|----------|---------|
           | 1  | KRX 시리즈 | 철강   | OPEN_API | DELETED |
           | 2  | KRX 시리즈 | 철강   | USER     | DELETED |
 
         - 유저가 동일한 지수 분류명, 지수 명으로 생성한다.  
-        기존에 중복된 데이터가 있어 새로 생성하지 않고 삭제 여부를 수정한다.
+          기존에 중복된 데이터가 있어 새로 생성하지 않고 삭제 여부를 수정한다.
 
           | ID | 지수 분류명  | 지수 명 | 소스타입     | 삭제 여부   |
-          |----|---------|------|----------|---------|
+                    |----|---------|------|----------|---------|
           | 1  | KRX 시리즈 | 철강   | OPEN_API | DELETED |
           | 2  | KRX 시리즈 | 철강   | USER     | ACTIVE  |
 
 ### 협업 및 피드백
 
 - 요구 사항을 바라보는 시각이 달랐다.
-  - 나의 의견
-    - 공공 데이터가 제공하는 데이터의 양은 23만개로 모든 데이터를 미리 가져온다.
-    - 유저가 원하는 데이터만 보여준다.
-    - 연동을 원하는 경우 이미 DB 에 있다면 보여주고 없다면 공공데이터 API 호출한다.
-    - 요구할 때마다 외부 API 호출하는 건 network i/o 가 많이 발생하여 서비스 품질이 나빠진다.
-  - 팀의 의견
-    - 유저가 원하는 데이터만 공공데이터 API 호출하여 가져온다.
-    - 이것이 요구 사항에 더 가깝다.
-    - 미리 가져온 데이터를 보여줘야 할 데이터와 아닌 것으로 어떻게 구분할지 고민해야 한다.
+    - 나의 의견
+        - 공공 데이터가 제공하는 데이터의 양은 23만개로 모든 데이터를 미리 가져온다.
+        - 유저가 원하는 데이터만 보여준다.
+        - 연동을 원하는 경우 이미 DB 에 있다면 보여주고 없다면 공공데이터 API 호출한다.
+        - 요구할 때마다 외부 API 호출하는 건 network i/o 가 많이 발생하여 서비스 품질이 나빠진다.
+    - 팀의 의견
+        - 유저가 원하는 데이터만 공공데이터 API 호출하여 가져온다.
+        - 이것이 요구 사항에 더 가깝다.
+        - 미리 가져온 데이터를 보여줘야 할 데이터와 아닌 것으로 어떻게 구분할지 고민해야 한다.
 
 ### 코드 품질 및 최적화
 
@@ -1222,26 +1228,26 @@ tasks.register("hello") {
 ### 향후 개선 사항 및 제안
 
 - 데이터 분석
-  - 우리가 사용할 데이터에 대한 데이터 분석을 하지 못해 아쉬웠다.
-  - 예를 들어 지수 분류명의 최대 글자 수, 시가 총액의 최대값 등 분석했다면 조회 로직 구현 시 많은 도움이 되었을 것이다.
-  - 공공데이터 API 명세서를 보면 지수 분류명과 지수 이름은 최대 240글자라고 되어 있다.
-    하지만 실제 데이터들의 최대 글자 수와 평균 글자 수를 알았다면 인덱스 전략을 어떻게 할지 도움이 되었을 것이다.
+    - 우리가 사용할 데이터에 대한 데이터 분석을 하지 못해 아쉬웠다.
+    - 예를 들어 지수 분류명의 최대 글자 수, 시가 총액의 최대값 등 분석했다면 조회 로직 구현 시 많은 도움이 되었을 것이다.
+    - 공공데이터 API 명세서를 보면 지수 분류명과 지수 이름은 최대 240글자라고 되어 있다.
+      하지만 실제 데이터들의 최대 글자 수와 평균 글자 수를 알았다면 인덱스 전략을 어떻게 할지 도움이 되었을 것이다.
 - 쿼리 성능 테스트
-  - 삽입
-    - PK 생성 전략이 identity 라 여러 객체를 한번에 insert 해도 query 는 하나씩 생성되어 성능 문제가 있다.
-    - sequence 로 바꿔 batch insert 가 가능하도록 변경
-  - 조회
-    - 지수 분류명 혹은 지수 이름으로 부분 일치 조회를 한다.
-    - 이 과정에서 인덱스를 생성하였는데 DB 에서 제공하는 다양한 방법들이 있었다.
-      - Trigram(3글자 쪼개기)로 문자열을 3글자씩 분리하여 인덱스 생성한다.
-      - 부분 일치에서 향상된 성능을 얻을 수 있다.
+    - 삽입
+        - PK 생성 전략이 identity 라 여러 객체를 한번에 insert 해도 query 는 하나씩 생성되어 성능 문제가 있다.
+        - sequence 로 바꿔 batch insert 가 가능하도록 변경
+    - 조회
+        - 지수 분류명 혹은 지수 이름으로 부분 일치 조회를 한다.
+        - 이 과정에서 인덱스를 생성하였는데 DB 에서 제공하는 다양한 방법들이 있었다.
+            - Trigram(3글자 쪼개기)로 문자열을 3글자씩 분리하여 인덱스 생성한다.
+            - 부분 일치에서 향상된 성능을 얻을 수 있다.
 - 외부 API 요청 시 비동기 구현
-  - 응답을 받을 때까지 사용자는 기다려야 한다.
-  - 이 부분은 사용자가 불편하게 느낄 수 있으므로 응답을 받으면 이벤트 리스너를 활용해 DB 에 저장하는 과정이 필요하다.
+    - 응답을 받을 때까지 사용자는 기다려야 한다.
+    - 이 부분은 사용자가 불편하게 느낄 수 있으므로 응답을 받으면 이벤트 리스너를 활용해 DB 에 저장하는 과정이 필요하다.
 - 자동화 빌드 및 배포
-  - Github actions 로 자동화 빌드를 구축한다.
-  - 위 과정에 image 를 생성하고 docker hub 에 push 를 한다.
-  - railway 에서 자동으로 내려받는다.
+    - Github actions 로 자동화 빌드를 구축한다.
+    - 위 과정에 image 를 생성하고 docker hub 에 push 를 한다.
+    - railway 에서 자동으로 내려받는다.
 
 </details>
 
@@ -1249,38 +1255,119 @@ tasks.register("hello") {
 <summary>2026-03-23</summary>
 
 - `Transaction`
-  - `Isolation`
-  - tx 의 원칙 중 하나이며 tx 간 격리를 말하며 여러 tx 가 접근할 때 생기는 문제를 해결할 수 있다.
-    - `Dirty Read`
-      - commit 되지 않은 데이터를 다른 tx 가 접근하는 경우.
-      - 만약 rollback 이 된다면 잘못된 데이터를 읽게 된다.
-    - `Non-repeatable Read`
-      - 같은 조회 쿼리를 보냈는데 결과가 다른 경우.
-      - 돈과 관련된 서비스의 경우 큰 문제가 발생하므로 해결해야 된다.
-    - `Phantom Read`
-      - 같은 범위 조회 쿼리를 보냈는데 없던 데이터가 생기는 경우.
-      - `select` 이후 `Select ... for Update` 하는 경우 발생한다. 
-  - `Serializable`
-    - lock 을 걸어 조회도 쓰기도 통제한다.
-    - 위 3가지 문제가 발생하지 않는다.
-    - deadlock 가능성이 높다.
-    - 정합성을 보장한다.
-  - `Repeatable read`
-    - DB 조회를 한다.
-    - tx 가 끝나지 않은 상황에 또 다른 tx 가 등장한다.
-    - 기존 tx 는 이후 tx 가 존재한다면 `undo log` 를 확인하여 조회를 한다.
-    - `undo log` 는 데이터 수정 시 원본이 저장되며 rollback 시 DB 에 덮어씌운다.
-    - 이 과정에서 여러 버전이 생길 수 있는데 과거 버전(`MVCC, Multi-Version Concurrency Control`)을 보여주어 일관성을 유지한다.
-    - 이 정책은 데이터 저장을 막지 않는다.
-    - 조회 -> 또 다른 tx 에 의한 데이터 삽입 -> 또 다시 조회 시 추가된 데이터가 발생되는데 이를 `Phantom Read` 라 한다.
-    - 하지만 데이터 삽입은 `undo log` 에 포함되지 않아 과거 버전을 참조할 수 있다.
-  - `Read committed`
-    - commit 데이터만 읽도록 한다.
-    - `Dirty Read` 방지하지만 나머지는 발생.
-    - `PostgreSQL` 기본값.
-  - `Read uncomitted`
-    - 가장 낮은 격리 수준.
-    - 위 3가지 문제가 발생.
-    - 정확성 보다 속도가 더 중요한 경우 사용.
+    - `Isolation`
+    - tx 의 원칙 중 하나이며 tx 간 격리를 말하며 여러 tx 가 접근할 때 생기는 문제를 해결할 수 있다.
+        - `Dirty Read`
+            - commit 되지 않은 데이터를 다른 tx 가 접근하는 경우.
+            - 만약 rollback 이 된다면 잘못된 데이터를 읽게 된다.
+        - `Non-repeatable Read`
+            - 같은 조회 쿼리를 보냈는데 결과가 다른 경우.
+            - 돈과 관련된 서비스의 경우 큰 문제가 발생하므로 해결해야 된다.
+        - `Phantom Read`
+            - 같은 범위 조회 쿼리를 보냈는데 없던 데이터가 생기는 경우.
+            - `select` 이후 `Select ... for Update` 하는 경우 발생한다.
+    - `Serializable`
+        - lock 을 걸어 조회도 쓰기도 통제한다.
+        - 위 3가지 문제가 발생하지 않는다.
+        - deadlock 가능성이 높다.
+        - 정합성을 보장한다.
+    - `Repeatable read`
+        - DB 조회를 한다.
+        - tx 가 끝나지 않은 상황에 또 다른 tx 가 등장한다.
+        - 기존 tx 는 이후 tx 가 존재한다면 `undo log` 를 확인하여 조회를 한다.
+        - `undo log` 는 데이터 수정 시 원본이 저장되며 rollback 시 DB 에 덮어씌운다.
+        - 이 과정에서 여러 버전이 생길 수 있는데 과거 버전(`MVCC, Multi-Version Concurrency Control`)을 보여주어 일관성을 유지한다.
+        - 이 정책은 데이터 저장을 막지 않는다.
+        - 조회 -> 또 다른 tx 에 의한 데이터 삽입 -> 또 다시 조회 시 추가된 데이터가 발생되는데 이를 `Phantom Read` 라 한다.
+        - 하지만 데이터 삽입은 `undo log` 에 포함되지 않아 과거 버전을 참조할 수 있다.
+    - `Read committed`
+        - commit 데이터만 읽도록 한다.
+        - `Dirty Read` 방지하지만 나머지는 발생.
+        - `PostgreSQL` 기본값.
+    - `Read uncomitted`
+        - 가장 낮은 격리 수준.
+        - 위 3가지 문제가 발생.
+        - 정확성 보다 속도가 더 중요한 경우 사용.
+
+</details>
+
+<details>
+<summary>2026-03-31</summary>
+
+- jpa 에서 N+1 문제는 지연 로딩에 의해 발생한다.  
+  객체를 가져오긴 하는데 모든 값을 가져오지 않는다.  
+  객체 내 필드를 참조할 때 DB 에 쿼리를 보내 값을 가져온다.  
+  이때 연관된 객체가 있는 경우 이를 가져오기 위해 추가로 쿼리를 보낸다.  
+  여기서 N+1 문제가 발생한다.
+- `MapStruct` 사용 시 mapper 간 의존관계가 있을 수 있다.  
+`@Mapper(uses={...})` 를 이용해 의존관계를 설정할 수 있다.  
+이렇게 사용하면 알아서 주입해주기 때문에 `NPE` 가 발생하지 않는다.  
+- controller 의 request dto 는 `Serializable` 이 필요하지 않다.  
+요청을 받을 때 body 에 json 형태로 받아 `Jackson` 에 의해 request dto 에 주입해준다.  
+dto 가 `Serializable` 필요한 경우 `Http Session clustering`, `Cache storage`, `Message Broker` 등에 사용할 때 필요하다.
+- JPA 는 `FROM / JOIN` 안에 서브쿼리를 지원하지 않는다.  
+- `@DataJpaTest` 시 `@Transactional` 자동으로 적용된다.  
+매 테스트마다 자동으로 롤백을 해준다.  
+하지만 어짜피 롤백되니까 1차 캐쉬에만 두고 실제로 DB 에 쿼리를 보내지 않는다.  
+따라서 테스트할 때 `EntityManager` 를 가져와 `flush` 를 해야 한다.  
+`@SpringBootTest` 할 때 롤백을 위해 `@Transactional` 을 추가한다.  
+이 경우도 `flush` 가 필요하다.
+- `@DataJpaTest` 는 DB 를 알아서 띄운다.  
+사전에 설정한 `schema.sql` 가 있다면 이를 적용하고 싶다.  
+또한 테스트를 위한 `application.yml` 를 적용하고 싶다.  
+하지만 알아서 테스트 환경을 구성하기 때문에 반드시 `@AutoConfigureTestDatabase(replace = Replace.NONE)` 를 class 에 추가해야 한다.
+- 테스트 DB 로 `H2` 를 사용할 때 일부 SQL 은 파싱 하지 못하는 경우가 있다.
+- `@ParameterizedTest` 는 테스트할 때 값을 파라미터로 주입해준다.  
+어떤 데이터가 들어올지 계산한다.  
+테스트 클래스를 생성한다.  
+`@BeforeEach` 실행한다.  
+테스트 실행한다.
+- JPA 는 `ID(pk)` 가 필요하다.  
+객체와 구분하기 위함이다.  
+id 생성 전략이 `identify` 일 때 삽입하기 전까지 id를 정할 수 없다.  
+UUID 인 경우 java 에서 생성하여 넘겨주기 때문에 bulk insert 가 가능하다.  
+객체를 생성하여 1차 캐쉬에 올라가기 위해 구분자인 id 가 필요하다.  
+그래서 DB 에 삽입 쿼리를 보내 id 를 받아온다.  
+id 생성 전략이 `identify` 인 경우 반드시 DB 가 알려줘야 한다.  
+`Hibernate` 는 id 생성 전략이 `identify` 인 경우 bulk 연산이 안된다.  
+보통의 경우 100개의 데이터를 보내면 100개의 id를 가져와 순서대로 삽입한다.  
+하지만 legacy DB 혹은 driver 에 따라 100개의 id 순서를 보장못하는 경우가 있다.  
+`Hibernate` 의 한계점이다.  
+그래서 `identify` 일 때 bulk insert 가 불가능하여 하나씩 쿼리를 보낸다.
+- `pk` 타입은 상황에 따라 결정한다.  
+빠른 검색과 join이 빈번한 경우 long 이 유리하다.  
+보안이나 분산 시스템을 사용하는 경우 UUID 를 사용한다.  
+내부에서는 long을 쓰고 외부에 보여줄때는 UUID 를 사용한다.
+- http 표준에서 request body 는 json 으로, file 도 적절하게 같이 보낼 수 없다.  
+이런 경우 `multipart/form-data` 라는 content-type 을 사용하면 body 를 독자적인 part 가 되어 multi-part 중 하나가 된다.  
+이 부분은 application/json 타입이고 file 은 png 같은 타입으로 분리된 part 로 취급되어 요청을 보내게 된다.
+- transactional 이 있는 service 에서 entity 를 반환했다.  
+tx 를 벗어나면 entity 는 jpa 가 더이상 추적하지 않는다.  
+1차 캐쉬에 없기 때문이다.  
+이런 상태를 `detached` 라 한다.  
+만약 이 객체 내 연관된 객체의 loading 방식이 lazy 라면 tx 를 벗어났기 때문에  
+`LazyInitializationException` 이 발생한다.  
+이 때문에 entity 를 dto 로 반환하는 이유이다.
+- `detached` 는 왜 존재할까  
+http 의 stateless 때문이다.  
+데이터를 수정해보자.  
+id와 수정할 데이터가 주어진다.  
+id가 있으니 수정할 데이터 주입해 객체를 생성한다.  
+이 객체는 detached 이다.  
+서비스가 이 객체를 보면 id 가 있지만 1차 캐쉬에 없어 DB와 합병하기 위해 entity manager 는 merge() 를 호출한다.  
+select 쿼리를 보내 뭐가 바뀐 건지 확인 후 현재 객체 값을 그대로 update 쿼리를 보낸다.  
+null 값이 있어도 그대로 업데이트 한다.  
+만약 객체를 조회해 없다면 insert 쿼리를 보낸다.  
+즉, merge 에서 select 는 insert 혹은 update 를 판단하기 위함이다.  
+다시 돌아와서 만약 http 가 stateful 이라면 client 와 server 가 계속 연결을 유지하며 DB connection 도 유지된다.  
+그래서 생성하고 수정할때 계속 1차 캐쉬에 존재하므로 detached 가 없다.  
+- update 할 때 우리는 객체를 불러와 값을 수정한다.  
+dirty checking 에 의해 update 쿼리가 생성된다.  
+덕분에 바뀐 부분만 수정할 수 있다.  
+detached, 불완전한 객체를 사용하기 보단 안전하게 영속화된 객체를 사용하자.
+- 새로 생성된 객체와 detached 차이는 merge 호출이다.  
+새로운 객체니까 insert 쿼리를 생성한다(persist() 호출).  
+detached 는 뭐가 바뀐지 혹은 존재하는지 알기 위해 select 후 insert or update 를 한다(merge() 호출).
+- 객체 조회 후 객체가 생성되는 방법은 `reflection` 을 사용하여 값을 주입해준다.
 
 </details>

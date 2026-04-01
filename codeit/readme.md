@@ -1371,3 +1371,32 @@ detached 는 뭐가 바뀐지 혹은 존재하는지 알기 위해 select 후 in
 - 객체 조회 후 객체가 생성되는 방법은 `reflection` 을 사용하여 값을 주입해준다.
 
 </details>
+
+<details>
+<summary>2026-04-01</summary>
+
+- `EntityManager.clear()` 1차 캐쉬와 sql 저장소 데이터들을 삭제한다.  
+java memory 에는 남아 있지만 영속화되지 않은 상태, `detached` 가 된다.
+- 객체를 생성하여 `repo.save(...)` 했다. 그리고 `repo.delete(...)` 했다. 쿼리는 몇 개가 생성될까.  
+id 생성 전략에 따라 다르다.  
+`identify` 경우 1차 캐쉬에 올리려면 당장 DB 에 보내 id 를 받아와야 한다.  
+따라서 바로 insert 쿼리를 보낸다.  
+그리고 나서 delete 쿼리를 보낸다.  
+`sequence`, `UUID` 전략은 쓰기 지연 때문에 바로 쿼리를 보내지 않는다.  
+1차 캐쉬에 삭제 표시를 남긴다.  
+dirty checking 을 건너뛰고 hibernate 가 매핑 정보를 살펴본다.  
+자식 객체가 있으면 재귀적으로 탐색하여 연관된 모든 객체들에 삭제 표시를 남긴다.  
+그리고 적절히 delete 쿼리를 생성한다.  
+이 과정에서 삭제 N+1 문제가 발생한다.  
+`OneToMany` 관계에서 부모 객체 삭제 시 cascade = remove 로 하면 N+1 문제가 생긴다.
+- `Transaction` 의 `readonly=true` 는 비교할 snapshot 을 만들지 않는다.  
+원본이 없으니 dirty checking 도 안하고 쿼리도 생성하지 않는다.  
+`@Immutable` 도 snapshot 을 만들지 않아 자원을 크게 아낄 수 있다.  
+snapshot 은 deep copy 를 하지 않는다.
+- jpa 는 기본적으로 쓰기 지연이다.  
+중간에 DB 에 쿼리를 보내야 한다면 sql 저장소에 있는 쿼리 모두 보낸다.  
+- native java 혹은 jpa entity 설계할 때 중첩된 혹은 계층적 구조는 메모리를 더 쓰지 않는다.  
+A <- B <- C vs A, B, C  
+전자처럼 계층 구조와 후자처럼 단독의 경우 메모리 사용량 차이가 없다.
+
+</details>

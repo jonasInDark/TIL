@@ -1400,3 +1400,25 @@ A <- B <- C vs A, B, C
 전자처럼 계층 구조와 후자처럼 단독의 경우 메모리 사용량 차이가 없다.
 
 </details>
+
+<details>
+<summary>2026-04-02</summary>
+
+- 객체 생성 시 자식 객체를 주입할 때 주의사항.  
+Message 생성 시 User, Channel, BinaryContent 객체들을 주입한다.  
+User, Channel 은 반드시 존재해야 하므로 생성 전 유무를 확인한다.  
+존재한다면 실제 객체를 가져오지 않고 proxy 객체를 생성해 주입해준다.  
+BinaryContent 는 새로운 객체이다.  
+save 시 Message 생성하는 query 1개, BinaryContent 갯수만큼 query N개, Message-BinaryContent 의 JoinTable 생성 query N개가 발생한다.  
+이때 batch size 를 설정했다면 3개의 query 가 생성된다, Message 1개, BinaryContent 1개, Message-BinaryContent 1개.  
+User, Channel 가 detached 일 때 주입할 때 문제가 생긴다.  
+detached 는 불안정한 상태이므로 hibernate 가 query 생성할 때 하나로 묶지 않고 개별로 query 를 생성한다.  
+즉, BinaryContent 갯수만큼 query 를 생성하며 JoinTable 도 마찬가지로 N개 생성한다.
+- `JPA` 가 계획하고 행동은 `Hibernate` 가 한다.  
+jpa 가 `OneToOne`, `Immutable` 과 같이 설계도를 만들면 hibernate 가 이를 보고 수행한다.  
+`EntityManager` 를 살펴보면 interface 이며 구현은 hibernate 가 한다.  
+그래서 dirty checking, sql 쓰기 저장소, persist, ... 모든 것을 hibernate 가 한다.
+- `QueryDSL` 은 (bulk) 조회, 수정, 삭제를 할 수 있다.  
+생성은 불가하며 오직 `EntityManager` 만 가능하다.
+
+</details>

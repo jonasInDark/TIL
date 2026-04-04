@@ -1422,3 +1422,42 @@ jpa 가 `OneToOne`, `Immutable` 과 같이 설계도를 만들면 hibernate 가 
 생성은 불가하며 오직 `EntityManager` 만 가능하다.
 
 </details>
+
+<details>
+<summary>2026-04-04</summary>
+
+- `EntityManager` 의 `flush` 는 3가지 단계의 동작을 한다.  
+dirty checking을 발동시킨다.  
+쓰기 지연 sql 저장소에 query 를 저장한다.  
+DB에 query 를 보낸다.
+- message 는 channel과 user, binaryContent를 참조하고 있다.  
+channel은 message를 참조하지 않는다.  
+현재 1차 캐쉬에 channel, message, user가 있다.  
+channel을 삭제하면 message가 삭제되어야 한다.  
+flush를 하면 `TransientObjectException` 발생한다.  
+이유는 같이 삭제될 message가 1차 캐쉬에 있어서 `managed` 객체가 `removed` 객체를 참조하는 현상이 발생하기 때문이다.  
+이때는 clear를 통해 1차 캐쉬를 비워야 한다.
+- 1차 캐쉬에 channel, message, binaryContent 가 존재한다.  
+message 는 나머지를 참조한다.  
+channel 을 삭제한다.  
+message도 삭제되어야 한다.  
+channel은 누가 나를 참조하는지 모른다.  
+message는 삭제될 객체를 참조하고 있어서 정합성 문제가 생긴다.  
+따라서 `TransientObjectException` 이 발생한다.  
+이 문제를 해결하기 위해 1차 캐쉬를 비워야 한다.  
+- message가 삭제되면 binaryContent도 삭제된다.  
+message는 삭제될 예정이다.  
+binaryContent는 message를 참조하지 않기 때문에 문제가 발생하지 않는다.  
+binaryContent는 message의 `orphanRemoval=true` 에 의해 삭제된다.
+- `CascadeType.REMOVE` vs `orphanRemoval`
+  - 공통점은 부모 객체가 삭제되면 자식 객체도 삭제된다.
+  - 전자는 자식과 관계를 끊어도 자식은 삭제되지 않는다.
+  - 후자는 삭제된다.
+- `OneToMany` 관계에서 삭제할 때 `N+1`문제가 발생한다.  
+jpa는 부모 객체 삭제 시 여러 자식 객체를 하나씩 삭제한다.  
+이유는 자식 객체 하나씩 살펴보면서 연관된 객체가 있는지 검사한다.  
+그래서 부모 객체 삭제 쿼리 1개 + 자식 객체 삭제 쿼리 N개가 생성된다.  
+만약 한번에 모든 자식 객체를 지운다면 `@PreRemove` 실행되지 못하게 된다.  
+jpa는 entity의 생명주기를 완벽히 보장하기 위해 이런 방식을 선택했다.
+
+</details>

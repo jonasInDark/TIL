@@ -1461,3 +1461,60 @@ jpa는 부모 객체 삭제 시 여러 자식 객체를 하나씩 삭제한다.
 jpa는 entity의 생명주기를 완벽히 보장하기 위해 이런 방식을 선택했다.
 
 </details>
+
+<details>
+<summary>2026-04-06</summary>
+
+- `Filo IO` class 에 대하여.  
+application이 disk에 데이터 저장을 OS에게 요청한다.  
+cpu는 메모리 어느 위치에 있는지 확인한다.  
+DMA(Direct Memory Access) 컨트롤러가 이 데이터를 가지고 디스크 컨트롤러에게 넘긴다.  
+디스크 컨트롤러는 데이터를 저장한다.  
+완료가 되면 DMA는 작업완료라고 cpu에게 interrupt를 보낸다.
+- generic은 다양한 데이터 타입에 대해 동작할 수 있도록 일반화하는 기능이다.  
+컴파일 시점에 타입을 체크하여 안정성 보장한다.  
+런타임에는 제네릭 타입 정보가 사라진다.  
+이유는 제네릭 이전 코드와 호완 때문이다.  
+다음과 같이 컴파일러가 작동한다.
+  ```java
+  // before compile
+  public <T> T get(T entity) {
+    return entity;
+  }
+  
+  String txt = get("hello");
+  Integer number = get(3);
+  ```
+  ```java
+  // after
+  public Object get(Object entity) {
+    return entity;
+  }
+  
+  String txt = (String) get("hello");
+  Integer number = (Integer) get(3);
+  ```
+- `spring bean` 생명 주기  
+spring container가 bean 설정들을 읽고 `new` 로 객체 생성한다.  
+객체들 간의 의존성 그래프를 확인하고 생성자를 통해 필요한 객체를 주입해준다.  
+`BeanPostProcessor`는 초기화 전처리를 한다.  
+`@PostConstruct`를 실행한다.  
+`InitializingBean`을 구현했거나 `afterPropertiesSet`이 있다면 실행하여 초기화를 한다.  
+`BeanPostProcessor`에 의해 초기화가 끝나면 후처리가 진행된다.  
+`@Transactional`, `@Async`같은 AOP가 있다면 proxy를 생성하여 container에 최종 등록한다.  
+이젠 사용할 수 있는 bean이다.  
+container 종료 전에 모든 bean들의 `@PreDestroy`를 실행하고 소멸시킨다.
+- api 특성 중 추상화, 캡슐화
+  - 추상화는 복잡한 내부로직을 단순한 인터페이스를 제공하는 성질이다.  
+  내부 로직 변경 시 외부 코드에 영향을 주지 않는다.
+  - 캡슐화는 구현 세부사항을 보호하기 위해 숨기고 정해진 방법으로 접근할 수 있게 혹은 필요한 부분만 노출하는 성질이다.
+  - api는 위와 같은 특성을 가지고 있어 사용자는 복잡한 내부 구현을 몰라도 사용할 수 있고 검증된 로직을 사용할 수 있다.
+- REST 등장 배경  
+기존에는 무겁고 복잡한 방식의 통신 프로토콜(SOAP, XML-RPC, ...)을 사용했다.  
+새로운 프로토콜을 만들지 말고 웹의 기본인 resource 위치, http method 를 명확하고 일관되게 사용하여 resource의 state를 주고 받는 아키텍쳐이다.  
+- `HATEOAS, Hypermedia As The Engine of Application State` rest api가 도달할 수 있는 가장 완변학 형태.  
+클라이언트는 url을 외우지 않는다.  
+서버는 데이터와 함께 url을 준다.  
+이걸 바탕으로 서버에게 요청하므로 url이 변경된다 해도 클라이언트는 수정할 필요가 없다.
+
+</details>

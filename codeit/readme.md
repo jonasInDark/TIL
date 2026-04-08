@@ -1518,3 +1518,27 @@ container 종료 전에 모든 bean들의 `@PreDestroy`를 실행하고 소멸�
 이걸 바탕으로 서버에게 요청하므로 url이 변경된다 해도 클라이언트는 수정할 필요가 없다.
 
 </details>
+
+<details>
+<summary>2026-04-08</summary>
+
+- `File IO` 는 cpu 점유율이 굉장히 낮다.  
+하지만 thread는 점유하고 있다.  
+blocking으로 처리하면 작업이 완료될 때까지 기다려야 한다.  
+이 요청이 많아지면 cpu는 한가한데 request를 받아줄 thread가 부족해진다.
+- spring mvc의 기본 방식은 blocking io이다.  
+file io를 하는 상황에서 non-blocking으로 처리해보자.  
+여러 개의 file을 처리할 때 여러 개의 worker가 처리하고 모든 io 작업이 끝나길 기다리는 master thread가 필요하다.  
+이것은 사실 진짜 non-blocking 방식이 아니라 위임하는 방식이다.  
+원래 non-blocking은 적은 자원으로 많은 요청을 처리하는 고효율 방식이다.  
+하지만 이 경우는 오히려 thread를 만드는데 자원을 더 사용하고 context switching이 더 자주 발생한다.  
+non-blocking을 하고 싶으면 모든 로직을 non-blocking으로 해야한다, DB까지도.  
+- JDBC는 blocking이다.  
+jpa(hibernate), mybatis도 내부적으로 jdbc를 사용한다.  
+DB에 query를 보내고 응답을 받을 때까지 thread는 connection을 계속 가지고 기다린다(blocking).  
+그래서 앞선 로직을 다 non-blocking으로 구현해도 DB 접근이 blocking이면 의미가 없다.  
+DB는 (non)blocking과 상관없고 이를 연결하는 driver와 관련있다.  
+non-blocking 지원하는 대표적인 예시가 `R2DBC`이다.  
+non-blocking driver를 안쓰는 이유는 jpa와 같은 강력한 기능이 없어 개발하는게 쉽지 않다.
+
+</details>

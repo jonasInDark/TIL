@@ -1676,3 +1676,36 @@ session 기반 인증은 redis cluster에서 관리하는데 여기서 장애가
   덕분에 외부로 나가는 요청은 안전하게 보낼 수 있다.
 
 </details>
+
+<details>
+<summary>2026-05-12</summary>
+
+- `HttpServletRequest(Response)` 는 tomcat connector 이 요청을 받아 `DispatcherServlet` 에게 전달하는 객체이다.  
+  ```text
+  POST /api/auth/login HTTP/1.1
+  Host: localhost:8080
+  Content-Type: application/x-www-form-urlencoded
+  
+  username=clickerheroes&password=123
+  ```
+  connector 는 위 text를 적절하게 parsing 하여 request 객체로 만들어준다.  
+- `HttpServletRequest`는 사실 interface 로 servlet container 마다 구현하는 방법이 다르다.  
+먼저 `Netty`, `Untertow` 라는 servlet container 가 있다.  
+raw text를 받으면 parsing 하는 방법에 약간 차이가 있는데 request가 들어왔다고 바로 parsing 하지 않는다.  
+이 과정에서 lazy parsing을 하는데 필요한 부분이 있을 때 마다 그 부분만 parsing 해서 넘겨준다.  
+랜카드로 들어오는 모든 데이터는 byte array 인데 이들이 memory에 차지 하는 크기는 데이터 크기와 거의 비슷하다.  
+100 byte 크기의 데이터를 받으면 memory 에 연속된 공간의 100 byte를 차지한다.  
+하지만 이것을 `String` 객체로 바꾸면 공간을 훨씬 더 차지하게 되어 gc의 작업량이 많아지게 된다.  
+또한 decoding 시 cpu 연산이 필요하며 필요하지 않은 byte까지 변환하게 된다면 앱의 성능이 저하될 것이다.  
+- 네트워크 전송되는 데이터는 무조건 byte 이다.  
+servlet container 에 전달되기 전 byte 로 전달되며 web server, api gateway 등은 필요한 부분만 parsing 하고 byte 로 전달한다.
+- Tomcat의 서블릿 컨테이너는 본래 스프링 컨테이너의 Bean을 직접 알지 못하며, 스프링 시큐리티의 복잡한 구조를 관리하기 어렵다.  
+그래서 톰캣의 필터 체인에는 보안 로직을 직접 수행하지 않는 가짜 filter인 `DelegatingFilterProxy`를 꽂아 넣는다.  
+요청이 들어오면 `DelegatingFilterProxy`는 스프링 컨테이너를 뒤져서 `springSecurityFilterChain`이라는 이름을 가진 Bean(`FilterChainProxy`)을 찾아 모든 처리를 위임한다.  
+이로써 스프링 시큐리티와 관련된 모든 보안 filter logic은 servlet container를 벗어나, DI가 자유로운 spring container 내부에서 실행되게 된다.
+- 인증 방법에는 `session`, `token` 기반 방법이 있다.
+- `session` 기반 인증은 인증 정보가 담긴 session 을 생성하고 session id 를 header 에 `set-cookie`로 담아 브라우저 내 cookie 로 저장된다.
+- `token` 기반 인증은 token 을 발급해준다. client 는 이 token 을 header 에 담아 전송한다. 이 token을 `JWT, JSON Web Token`이라 한다.  
+서버는 header 의 token 을 검증한다. 분산 환경에 적합하다.
+
+</details>

@@ -1709,3 +1709,91 @@ servlet container 에 전달되기 전 byte 로 전달되며 web server, api gat
 서버는 header 의 token 을 검증한다. 분산 환경에 적합하다.
 
 </details>
+
+<details>
+<summary>2026-05-14</summary>
+
+- `Http` version 에 대하여
+  - `HTTP/1.1` `HTTP/1.0`은 tcp connection을 만들고 끊고를 반복했다.
+    - 이 버전은 만든 connection을 재사용할 수 있다.
+    - `HoL, Head of Line Blocking` 데이터는 순서대로 전달되어야 한다.  
+    앞선 데이터가 거대하다면 뒤 데이터는 계속 기다려야 한다.  
+    `nginx` - `tomcat` 같은 내부망 통신은 지연 시간이 거의 없어 사용될 수 있다.
+    - 이 버전의 가장 중요한 문제점은 불필요한 string parsing 이 일어난다는 것이다.  
+    network data 전송은 byte 형태이다.  
+    `1.1`은 byte를 읽어 문자열로 변환한다.  
+    변환 후 문자열을 하나하나 읽어 `GET`을 확인하고 `\r\n`을 확인해야 한다.  
+    이 과정에서 cpu 연산이 필요하여 resource 낭비가 되고 있다.
+  - `HTTP/2` `HoL` 문제 해결을 위해 여러 개의 데이터를 분할해 순서 상관없이 병렬로 전송할 수 있다.
+    - 규격화된 데이터 구조로 전송하여 문자열을 검색할 필요없이 정해진 offset 만큼 byte를 잘라 해석할 수 있게 된다.  
+    덕분에 cpu parsing 속도가 비교도 안되게 빨라졌다.
+    - 하지만 `TCP`에 의한 `HoL`문제가 남아 있다. 병렬로 송신해도 수신측은 순서대로 전달해 준다.  
+    만약 중간에 네트워크 오류로 인해 패킷이 유실되었다면 이미 도착한 패킷은 유실된 패킷을 받을 때 까지 기다려야 한다.  
+    다행히 유실된 패킷을 포함한 전체 데이터를 요청하지 않고 필요한 부분만 요청한다.
+  - `HTTP/3` `TCP`를 버리고 `UDP` 기반에 google이 만든 `QUIC` protocol을 얹어 만들었다.
+    - `TCP HoL` blocking 해결했다. 유실된 패킷만 재전송을 하고 나머지는 전달된다.
+    - mobile 환경에서 자주 사용된다.
+- `TCP, Transmission Control Protocol`
+  - 장점
+    - 완벽한 신뢰성, 순서 보장.
+      - 앱에서는 유실된 패킷을 걱정할 필요가 없다.
+    - 흐름 제어
+      - 수신자의 buffer 가 가득차면 TCP는 송신자에게 그만 보내라고 통제한다.
+    - 혼잡 제어
+      - 네트워크가 데이터로 넘쳐 혼잡해지면 전송 속도를 줄이고 완화되면 속도를 올린다.
+  - 단점
+    - 무거운 초기 연결
+      - 통신을 시작하기 전에 보내도 되는지 `확인 요청 -> 가능 -> 데이터 전송` 과정을 거쳐 msa 환경에서 병목이 생긴다.
+    - slow start
+      - 앞서 혼잡 제어 특성 때문에 초기에는 전송 속도를 낮게 하고 점점 올린다. 대역폭을 제대로 사용하지 못할 수 있다.
+    - 메모리 낭비와 상태 유지
+      - 신뢰성 보장을 위해 client - server 간 buffer 를 만들고 연결 상태를 추적한다.  
+      때문에 데이터를 주고 받지 않아도 수 많은 곳과 연결 때문에 memory 소모가 크다.
+- `UDP, User Datagram Protocol` 는 `TCP` 와 달리 connection 을 유지하지 않는다.
+  - 장점
+    - 3-way handshake 를 하지 않고 바로 데이터를 전송한다.
+    - 송신 후 수신하면 끝이라(connectionless, unacknowledged) server memory 를 많이 쓰지 않는다.
+    - 한번에 여러 곳으로 송신이 가능해 1:N 전송에 유리하다.
+  - 단점
+    - 신뢰성이 부족하다. 패킷이 유실되도 책임을 지지 않아 앱에서 관련 로직을 구현해야 한다.  
+    또한 순서도 보장하지 않는다.
+    - 네트워크가 혼잡해도 제어하지 않고 데이터를 마구 전송한다.
+    - 비연결성(connectionless), 무응답(unacknowledged) 라서 수신 완료 응답을 받지 않는다.  
+    이러한 특징 때문에 비동기 시스템이나 실시간 스트리밍 아키텍처에 적합하다.
+    - tomcat 과의 궁합은 좋지 않다.  
+    osi/L4 에서 해주던 tcp 의 역할까지 대신하게 된다. tcp 가 여러 개로 전달된 패킷을 하나로 합쳐 L7으로 전달해줬다.  
+    이 역할을 tomcat 이 해야 하는데 모든 패킷이 도착할 때 까지 담당 스레드는 계속 기다려야 한다(blocking).
+- 정리하자면 L4 에서 `TCP` - `UDP` 의 변경은 L7 에 영향을 끼친다.
+- `HTTPS` 에는 버전이 없다. 단지 `HTTP`에 보안 기술을 더한 것이다.  
+- `SSL, Secure Sockets Layer` 초기 보안 기술이고 여러 취약점으로 사장되었다.
+- `TLS, Transport Layer Security` `SSL` 의 취약점을 보완해 현재 표준이 되었다. 1.0, 1.1, 1.2, 1.3 까지 있고 1.3이 최신 표준이다.
+  - `HTTP/3` 에서는 `TLS 1.3`을 강제로 내장했다.
+- `XSS, Cross-Site Scripting` 는 남의 웹사이트에 몰래 js 를 심어두고 여길 접속한 유저들의 정보를 탈취하는 것이다.
+  - `HttpOnly` 가 붙은 cookie 는 js 로 접근할 수 없다.
+  - `SameSite` 가 붙은 cookie 는 cookie 가 허용한 domain 에서만 서버로 전달된다.
+  - `CSP, Content Security Policy` 에 의해 우리가 제공한 js 이외 inline script 실행을 금지시키는 브라우저 정책이다.
+- `SQL Injection` 은 server 에서 막아야 한다.  
+`Hibernate`, `MyBatis`를 사용한다면 걱정없다. SQL 이 아닌 글자 자체로 인식한다.
+- `Cookie` 는 server 와의 대화를 위한 데이터이다.  
+Http 의 stateless 특성 때문에 매 request 마다 인증을 해야 하는 번거로움을 피하기 위함이다.  
+그래서 브라우저가 가지는 local, session storage 와 별개로 `Cookies` 라는 이름의 DB가 존재한다.
+- web server 에서는 https 로 보낸 요청을 복호화하여 backend server 로 전달한다.  
+또한 https 요청은 http 와 전혀 다른 것이 아니라 암호화 과정이 추가된 것 이다.  
+그래서 java servlet 에는 `HttpServletRequest`만 존재한다.
+- `CSR` 과 `SSR`, session 과 token 기반 인증에 대해.
+  - `CSR`, `SSR`
+    - rendering 방식. 전자는 client 가, 후자는 server 가 rendering 하여 client 에게 넘겨준다.
+    - 전자는 static resource 만 제공해주고 필요한 데이터는 server 에 요청한다.
+      - nginx가 static resource를 제공
+    - 후자는 필요한 데이터 모두 포함하고 rendering 까지 하여 client 에게 넘겨준다.
+      - node.js 기반 front server 가 rendering 하여 넘겨준다.  
+      이 과정에서 필요한 데이터가 있으면 backend 에 요청할 수 있다.
+      - `React` 를 개발하고 build 하면 static resource 가 만들어지고 이걸 nginx 가 serving 하면 `CSR` 방식이 된다.
+      - node.js 역시 static resource 전달하는 것이 비효율적이다.
+  - `session`, `token` 기반 인증
+    - 전자는 `SSR` 의 경우 session id 를 server 에 저장하고 cookie 를 보낸다.
+    `CSR` 은 `JWT`를 건네주고 js가 header 에 추가하여 request 를 보낸다.
+  - `SSR` 에서는 cookie 를 자동으로 보내기 때문에 `CSRF` 공격 받을 수 있다.
+  - `CSR` 은 `REST API` 구조이면 header 에 token 을 담아 보내기 때문에 `CSRF` 걱정이 없다.
+
+</details>

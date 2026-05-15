@@ -1797,3 +1797,54 @@ Http 의 stateless 특성 때문에 매 request 마다 인증을 해야 하는 �
   - `CSR` 은 `REST API` 구조이면 header 에 token 을 담아 보내기 때문에 `CSRF` 걱정이 없다.
 
 </details>
+
+<details>
+<summary>2026-05-15</summary>
+
+- `@Transactional` 유무에 대한 `DB Connection pool`
+  - tx 가 붙으면 tx manager, 없으면 repository 가 `Hikari` 에게 connection 을 받아 온다.
+  - db 접근 시 tx 유무 차이는 생각보다 크다.
+    - tx 에는 `isolation` 설정을 할 수 있는데 다른 tx가 내가 참조하는 데이터에 접근 설정을 할 수 있다.
+    - tx가 없을 때 repo 에서 조회한다 -> 어떤 tx가 이 데이터를 삭제한다 -> `Non-repeatable read` 발생
+    - 즉 tx 는 `ACID`를 보장하므로 DB 조회 시 추가하도록 하자.
+  - tx 가 없으면 DB 에 query 를 보내지 않는다. jpa 의 쓰기 지연 때문에 sql 저장소에 query 가 쌓이지만 flush and commit 이 없기 때문에 DB에 반영이 안된다.
+  - 하지만 조회는 쓰기 지연에 해당되지 않아 바로 query를 보낸다. 다만 lazy loading 이 있고 이걸 꺼낸다면 문제가 발생한다.
+  - 여러모로 tx 없이 DB 접근은 많은 불편함을 동반한다.
+- browser 의 `SOP, Same-Origin Policy` 덕분에 타 도메인의 데이터를 읽을 수 없다.  
+예를 들어 `hacker.com` 에 접속한 유저가 있다.  
+여기서 다운 받은 js에 의해 `GET /example.com` 하여 credential data 를 가져오도록 해보자.  
+그럼 `CSRF Token`을 포함하여 `example.com` html 을 만들어 보내주려고 한다.  
+이때 `CORS`에 의해 `example.com` html 을 `hacker.com` 으로 보내는 것을 막는다.  
+`CORS` 허용 목록에 `hacker.com`이 없기 때문이다.  
+`SOP`는 타 도메인의 데이터를 읽을 수 없지만 보낼 수 있다.  
+읽을 수 있는 예외는 `CORS`가 허용한 도메인이다.  
+그래서 사실 `SOP`에 의한 에러인데 `CORS` 에러라고 나오는 이유가 이 때문이다.  
+물리적으로 jwt 를 읽을 수 없기 때문에 `CSR` 에서 `CSRF` 설정을 꺼도 된다.
+- browser 의 local storage 는 domain 별로 관리한다.  
+때문에 `example.com` 에 저장된 jwt 는 `hacker.com` 에서 열람할 수 없다.  
+그럼 이 jwt 를 가져오기 위해 `XSS` 공격을 해야한다.  
+`example.com` 에 글을 작성하고 내부에 js 를 숨긴다.  
+유저가 글을 읽을 때 jwt 를 hacker 에게 전달하려 할 때 jwt 속성에 `HttpOnly` 가 붙어 있어 보낼 수 없게 된다.
+- 그럼 jwt 를 가져오지 않고 이용만 한다면 ?  
+jwt 를 가져온다면 영구적으로 사용할 수 있지만 이걸 사용한다면 일시적인 피해를 입을 수 있다.  
+다시 돌아와서 `example.com` 에 숨겨둔 js 에 의해 http 요청을 보내 피해를 줄 수 있다.  
+그래서 `XSS` 를 막기 위해 유저가 입력한 글을 모두 텍스트로 만들어 script 가 실행할 수 없는 구조로 만들어야 한다.  
+또한 `CSP, Content Security Policy`에 의해 `example.com`에 의한 js 를 제외한 모든 script 를 실행할 수 없도록 한다.
+- `SSR`에서 `JWT` 를 사용하면 어떨까 ?
+  - **최악이다.**
+  - jwt 는 모든 요청에 header 에 담아 보내야 한다.
+  - `<a>`, `<form>` 등은 browser 가 실행해 준다.  
+  즉 local storage 에서 jwt 를 꺼내 header 에 담아 보내줄 수 없다.  
+  jwt 가 없으니 log-out 된다.
+  - 만약 이러한 tag 들을 custom 한다고 하자.  
+  기존 기능을 막고 새롭게 customized 한 tag 를 사용해보자.  
+  fetch 가 가능하지만 url 은 변하지 않는다.  
+  뒤로가기도 동작하지 않는다.  
+  물론 고칠 수 있지만 굉장히 수고스럽다.
+  - fetch 하여 새로운 화면으로 갈아 끼운다면 memory leak 이 발생한다.  
+  기존 화면에 등록된 event listener 들이 바로 제거되지 않는다.  
+  화면을 갈아 끼우는 과정에서 `Flickering` 가 발생해 UX가 낮아진다.  
+  새로운 화면은 `document.body.innerHTML = newHTML` 에 의해 바뀌어 지는데 HTML5 보안 정책에 의해 `<script>`를 실행할 수 없다.  
+  - 따라서 `SSR` + `JWT` 조합은 최악이다.
+
+</details>

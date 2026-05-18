@@ -1848,3 +1848,35 @@ jwt 를 가져온다면 영구적으로 사용할 수 있지만 이걸 사용한
   - 따라서 `SSR` + `JWT` 조합은 최악이다.
 
 </details>
+
+<details>
+<summary>2026-05-18</summary>
+
+- `UsernamePasswordAuthenticationFilter` 는 form 기반 login 요청에 대해서만 인증을 해준다.
+- `SSR` 은 서버에서 화면을 그려주기 때문에 token 을 form 안에 넣어줄 수 있다.  
+그래서 form 제출하면 이 값과 server 의 값을 비교한다.  
+이러한 패턴을 `Synchronizer Token Pattern, 동기화 토큰 패턴`이라 한다.
+- `CSR` + session + csrf token 은 session id, token 둘 다 검증하므로 `Double submit pattern` 이라 한다.  
+session id 와 csrf token 을 쿠키에 담아 보낸다.  
+client 는 쿠키에서 csrf token 을 꺼내 header 에 담아 요청을 보낸다.  
+이 과정에서 session id 는 쿠키이므로 자동으로 담겨 진다. `HttpOnly` 라 js에서 접근할 수 없다.  
+token 은 쿠키에서 꺼내 header 로 담아 서버에서 header 와 만들어 둔 token 을 비교한다.  
+이 때 `HttpOnly=false` 인데 쿠키에서 꺼내 header 에 담아 보내는 것 때문에 `CSRF` 공격을 방어할 수 있다.  
+`XSS` 공격은 뚫리면 `CSRF` 대비책이 소용없기 때문에 front, backend 둘 다 조심해야 한다.
+- csrf token 은 session 생명 주기를 따라간다. 매번 발급하지 않는다.  
+로그인 시 session id 는 없고 csrf token 은 발급해 준다.  
+이는 로그인 시도 자체도 csrf 공격의 대상이 될 수 있기 때문이다.  
+따라서 csrf token 만 쿠키에 담아 보낸다.  
+`CSR` 경우 token 을 담아 화면을 그려줄 수 없기에 front 에서 따로 csrf token 을 생성해주는 api 요청을 해야 한다.  
+그래서 이를 발급해주는 handler method 를 구현한다.  
+이 때 token 은 의미없는 깡통 token 이다.  
+로그인이 성공한다면 새로운 token 을 발급해준다.  
+이는 미리 브라우저에 token 을 강제로 하고 로그인 유도를 하는 공격으로 부터 방어하기 위함이다.  
+이 공격을 `CSRF Token Fixation` 이라 한다.
+- security config 에서 `.permitAll()` 은 filter 건너뛰게 해주는 것이 아니다.  
+사전에 정의된 대로 모든 filter 들을 통과하고 마지막에 권한 검사를 할 때 exception 던지지 말라는 뜻이다.
+- backend server 가 하나라면 tomcat memory 에 session id 를 저장하는게 빠르고 편하다.  
+tomcat 은 `SessionManager`가 있어서 모든 session id 를 가지고 있다.  
+로그아웃 혹은 timeout 시 session id 를 삭제한다.
+
+</details>

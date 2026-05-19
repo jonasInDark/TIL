@@ -1880,3 +1880,77 @@ tomcat 은 `SessionManager`가 있어서 모든 session id 를 가지고 있다.
 로그아웃 혹은 timeout 시 session id 를 삭제한다.
 
 </details>
+
+<details>
+<summary>2026-05-19</summary>
+
+- `@FunctionalInterface` 의미  
+함수형 인터페이스는 무조건 람다식으로 사용하라는 의미가 아니라 추상 메서드가 단 하나라는 의미이다.  
+이것은 자바 8에서 생겼으며 새로운 함수 타입을 만들지 않고 추상 메서드가 단 하나인 인터페이스들을 람다로 쓸 수 있게 하였다.  
+- `AuthenticationManager` 는 함수형 인터페이스이며 `authenticate` 라는 단 하나의 추상 메서드가 있다.  
+개발자는 이걸 상속받아 구현할 수 있고 정말 간단하게 람다식을 이용해 구현할 수 있다.
+- `AbstractAuthenticationProcessingFilter` spring security 초창기 부터 구현되어 있었고 form 로그인을 처리하기 위한 추상 클래스이다.  
+여기에는 성공, 실패, 세션 생성기 등 여러 기능들을 다 포함하는 무거운 템플릿이다.
+- `AuthenticationFilter` 는 spring security 최신 버전에서 등장하였다.  
+`REST API`, `JWT` 가 대세가 되면서 composition이 가능한 가벼운 filter 로 설계 되었다.
+- `AuthenticationFilter` 는 `OncePerRequestFilter` 추상 클래스를 상속 받아 구현하고 있다.  
+`OncePerRequestFilter` 는 `GenericFilterBean`을 상속 받고 있다.  
+`GenericFilterBean`의 문제점은 하나의 http 요청이 여러 번 filter 를 거치는 버그가 발생할 수 있다.  
+그래서 `OncePerRequestFilter` 는 이미 filtering 이 되었으면 다음으로 넘겨버리도록 구현했다.  
+`AbstractAuthenticationProcessingFilter` 는 중복 실행 방어가 조금 허술?하게 되어 있어 이를 보완한 것이 `OncePerRequestFilter` 이다.
+- `BasicAuthenticationFilter` 는 `Authorization: Basic YWRtaW46MTIzNA==` 형태의 헤더 하나만 처리하기 위한 필터이다.  
+사용할 일이 없다.
+- `AuthenticationManager` 는 실제로 인증을 하지 않고 가지고 있는 provider 목록을 본 다음 처리할 수 있는 provider 에게 넘긴다.
+  - 이것을 구현하는 구현체는 4가지가 있다.
+  - `ProviderManager` manager 로서 실질적으로 동작하는 구현체이다. 모든 provider를 가지고 있는 목록이 있다.  
+  이를 순회하면서 인증가능한 provider 에게 넘긴다.
+  - `AuthenticationManagerDelegator` proxy 객체이며 순환 참조를 막기 위함이다.  
+  예를 들어 custom user details service 가 auth manager 를 참조하는 경우를 생각해 보자.  
+  이러면 manager 가 생성되어야 service 도 생성이 된다.  
+  하지만 manager 도 service 가 필요하므로 순환 참조가 발생해 exception 을 던지고 종료된다.  
+  이런 일을 막기 위해 service 에게 proxy 를 준다.  
+  이 문제는 초기 bean 생성하는 과정에서 발생한다.
+  - `NoOpAuthenticationManager` `No Operation` 이며 아무것도 안하는 manager 이다. `NPE` 발생을 막기 위함이다.
+  - `ObservationAuthenticationManager` `ProviderManager`를 감싸고 있는 wrapper class 이다. logging 하고 싶을 때 사용한다.  
+  실질적인 일은 `ProviderManager` 에게 위임한다.
+- `ProvideManager` 는 여러 개 존재한다.  
+spring security 는 여러 개의 security filter chain 을 지원한다.  
+즉 여러 개의 `SecurityFilterChain` 을 등록할 수 있다.  
+여기서 각각 filter chain 마다 `ProviderManager` 를 따로 배정한다.  
+이 때 해당 provider manager 가 인증을 처리하지 못하면 참조하고 있던 parent provider manager 에게 인증을 맡긴다.  
+예를 들어 `/api/**`, `/admin/**` 각각 담당하는 local provider manager 가 있다.  
+만약 local manager 가 인증을 처리하지 못하면 내부에 parent provider manager 에게 인증을 위임한다.  
+이 때 parent manager 들은 전역적으로 인증을 처리할 수 있는 provider 들을 가지고 있다.  
+여기서도 인증을 못하면 exception 을 던진다.
+- `AuthenticationProvider` 실제로 인증 로직을 실행한다.
+- `CsrfTokenRepository` token 을 어디에 보관할지 결정한다, session memory 혹은 browser cookie.
+- `CsrfTokenRequestHandler` token 을 어디서 가져올지 결정한다, header 혹은 form.  
+그리고 서버에서 가지고 있는 token 과 비교한다.  
+이 때 `BREACH attack` 을 방어하기 위해 security 에서 token 을 무작위로 `XOR Hashing` 하여 보내고 있다.  
+client 에서 보낸 token 을 복호화하여 서버에 있는 token 과 비교한다.
+- `BREACH, Browser Reconnaissance and Exfiltration via Adaptive Compression of HyperText` 공격이란 Https 를 뚫는게 아닌 압축 알고리즘(`GZIP`)의 허점을 찌르는 공격이다.  
+server 에서 client 로 web page 를 보낼 때 압축을 해서 보낸다.  
+`GZIP` 은 똑같은 문자열이 반복되면 짧은 기호로 묶어 용량을 줄인다.  
+hacker 는 내용은 알 수 없지만 전체 packet 은 알 수 있다.  
+이 공격은 4가지 조건이 필요하다.  
+  - HTTPS: packet 의 크기를 알 수 있다.
+  - 압축 알고리즘 사용: 중복 문자열 발생 시 크기가 줄어 든다.
+  - `SSR`: token 을 본문에 담아 보내준다.
+  - `Reflected`: hacker 가 유저의 브라우저를 해킹해 hacker 가 보낸 요청이 응답 html 에 포함되어야 한다.  
+  예를 들어 hacker 가 조작하여 `science` 라는 글자를 보냈고 서버에서 `science` 라는 글자를 담아 응답을 보내줘야 한다.  
+
+token 이 `secret` 이라면 hacker 는 처음에는 `a` 를 보낸다.  
+packet 크기가 줄지 않아서 첫글자로 `a`는 아니게 된다.  
+이번에는 `s` 를 보낸다. packet 크기가 줄었다. 첫글자 `s`를 맞췄다.  
+이런 식으로 token 을 유추할 수 있다.  
+따라서 서버에서는 token 을 암호화하여 매번 다른 token 을 client 에게 보내 유추할 수 없게 한다.
+- client 입장에서는 어짜피 매번 새로운 token 을 받는데 아예 server 에서 매번 새로운 token 을 발급하는 건 어떨까 ?  
+매번 새로운 token 을 발급해 준다면 여러 개의 tab에는 모두 token 이 다르고 마지막으로 생성된 tab 의 token 만이 진짜가 된다.  
+따라서 나머지 tab 에서 요청을 보낸다면 문제가 생기게 된다.  
+또한 하나의 web page 내 여러 개의 api 요청이 있을 수 있다.  
+이것들 역시 token 이 달라 front 의 state 관리가 엉망이 된다.  
+따라서 실제 token 은 하나로 고정하고 매번 암호화하여 새로운 token 을 보내게 된다.  
+사실 이 문제는 `SSR` 에서 발생하며 `CSR` 에서는 문제가 되지 않는다.  
+`CSR` 에서는 압축 알고리즘에 대한 공격이 통하지 않기 때문이다.
+
+</details>

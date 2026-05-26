@@ -1954,3 +1954,54 @@ packet 크기가 줄지 않아서 첫글자로 `a`는 아니게 된다.
 `CSR` 에서는 압축 알고리즘에 대한 공격이 통하지 않기 때문이다.
 
 </details>
+
+<details>
+<summary>2026-05-26</summary>
+
+- `WebSocket` 하나의 `TCP` 접속에 의존하여 client - server 간 full-duplex 통신을 제공하는 protocol 이다.
+- `Json Web Token`  
+`JWT` 는 `stateless`를 지향한다.  
+위조 불가능한 token 을 client 에게 생성해준다.  
+- `JWT` 의 구조
+  - `Header(알고리즘)` + `.` + `Payload(유저 정보)` + `.` + `Signature(서명)` 으로 세 부분으로 나뉜다.
+  - payload 에는 민감한 정보를 넣으면 안된다. 이것은 암호화된 정보가 아니라 평문으로 복호화할 수 있다.
+  - server 는 secret key 를 가지는데 header, payload 를 encoding 하고 key 를 이용해 hashing 하여 signature 를 만든다.
+  - client 가 token 을 보내면 header, payload 를 hashing 하여 signature 과 비교한다.
+  - DB 조회를 통해 인증을 하지 않아도 된다.
+- `CSR` 에서 `JWT` 를 browser memory 혹은 load storage 에 저장한다.  
+header 에 `Authorization: Bearer <JWT>` 형태로 보낸다.
+- mobile 에서는 cookie 와 같은 저장 공간이 없다.  
+앱 내부 혹은 mobile storage 를 사용하는데 여기에 `JWT` 를 저장하고 요청마다 header 에 담아 보낼 수 있다.
+- `SSR` 에서는 페이지 이동이 일어나 cookie 를 사용해야 한다.  
+`JWT` 를 cookie 에 담아 사용하면 `CSRF`, `CORS` 문제가 발생한다.  
+`JWT` 는 token 의 유효기간이 있다.  
+logout 을 해도 token 의 유효할 수 있어 이를 막기 위해 blacklist 에 추가한다면 DB 조회를 하게 되므로 사실상 `JWT` 사용하는 이점이 없게 된다.
+- `XSS` 에 의해 token 이 탈취되면 막을 수 없기에 수명이 짧은 `Access token` 과 이를 만드는 기간이 긴 `Refresh token` 구조를 사용해야 한다.
+- access token 은 `JWT` 형태로 만들어지고 수명이 존재한다. 15분처럼 짧은 시간동안 유효하다.
+- refresh token 은 access token 이 만료될 때 다시 만들어 준다.  
+`JWT` 형태가 아니라 무작위의 문자열이다.  
+이 token 은 DB 에 저장된다.
+- client 는 두 token 을 받는다. access token 이 유효하다면 빠르게 인증된다.  
+유효기간이 끝났다면 client 가 보낸 refresh token 이 유효한지 DB 를 참조해 확인한다.  
+유저는 새로운 access token 을 받는다.
+- refresh token 은 탈취되면 위험하므로 cookie 에 저장되고 `HttpOnly`, `Secure` 속성을 부여한다.
+  - `Secure` 오직 `Https` 로 요청을 보낼 때만 cookie 를 server 에 전달하도록 한다.
+- `Http/Https` 둘의 차이는 secure 적용이다. 즉 통신 프로토콜은 같고 secure 가 추가된 것이다.  
+front 에서 https 로 보낼 때 backend 에 인증서가 없다면 요청이 거부된다.  
+반대로 https 가 적용되었는데 http 로 보낸다면 https 로 redirect 301 이 강제될 수 있다.
+- `Http/Https` 는 서로 다른 port(80/443) 을 사용하므로 요청을 구분할 수 있다.  
+web server 가 암호화된 요청을 풀어 backend 에게 넘겨주고 header 에 `Forwarded-Proto: https` 를 추가하면 backend 에서 https 라는 것을 알 수 있다.
+- refresh token 은 반드시 https 가 강요된다.  
+access token 이 만료되어 새로 발급해야 하는 경우 refresh token 이 server 로 보내야 하는데 `Secure` 속성 때문에 보낼수가 없다.
+- access token 은 local storage 에 저장하면 script 로 접근할 수 있기 때문에 module 의 private variable 에 저장한다.  
+이러면 `XSS` 공격으로 탈취할 수 없다.  
+그러나 탈취할 수 없지만 요청은 보낼 수 있기 때문에 `CSP` 설정을 해야 한다.
+- payload 는 왜 암호화하지 않는가 ?  
+암호화는 비밀유지하기 위함이다.  
+`JWT` 의 목적은 데이터가 위조되지 않았음을 증명하는 것이다.  
+굳이 암호화할 필요가 없다.  
+또한 암호화한다면 payload 에 담긴 정보 중 username, role, expiration time 같은 정보를 복호화해야 한다.  
+복호화하기 위해 key 를 가져야 하는데 browser 에게 key 를 주는 것은 보안상 위험하다.
+- `Https` 를 적용하기 위해 인증서가 필요하다. 인증서는 dns 에 대해 발급해준다.
+
+</details>

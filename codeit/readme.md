@@ -2005,3 +2005,29 @@ access token 이 만료되어 새로 발급해야 하는 경우 refresh token �
 - `Https` 를 적용하기 위해 인증서가 필요하다. 인증서는 dns 에 대해 발급해준다.
 
 </details>
+
+<details>
+<summary>2026-05-27</summary>
+
+- **signature 는 위조 여부를 검사하기 위한 값이다.**
+- `JWT` signature 만드는 방식 비교
+  - `HS256(대칭키), HMAC with SHA-256`
+    - secret key 가 1개이다.
+      - client 가 보낸 jwt 중 header, payload 를 signature 로 만들고 비교한다.
+      - client 에게 보내줄 jwt 의 signature 를 만들기 위해 secret key 를 이용한다.
+      - 위 두 과정에서 동일한 secret key 를 사용한다.
+    - monolithic architecture 에서 사용하기 적절하다.
+    - 연산이 비교적 빠르다.
+  - `RS256(비대칭키), RSA with SHA-256`
+    - signature 를 만드는 private key, signature 를 확인할 수 있는 public key 가 존재한다.
+    - header + payload 를 hashing 한 값을 얻는다. private key 로 암호화한다. 이게 signature 이다.
+    - client 로부터 jwt 를 받는다. header + payload 를 hashing 한 값을 얻는다. signature 를 public key 로 복호화한다.  
+    복호화한 값은 hash 값으로 비교한다.
+    - signature 만드는 서버(인증 서버)를 분리할 수 있어 private key 를 절대 노출시키지 않을 수 있다.
+    - msa 에서 사용하기 적절하다.
+    - RSA 기반 암호화 방식들은 연산이 많이 필요하다.
+    - 여기서 public key 의 의미는 공개되어도 문제가 없다는 것이다.  
+    인증서버에서 아예 public key 를 공개할 수 있다. 다른 서버들은 이걸 가져다 쓸 수 있다.  
+    public key 만 가지고 있으면 위조를 할 수 없기에 공개해도 문제가 없다.
+
+</details>

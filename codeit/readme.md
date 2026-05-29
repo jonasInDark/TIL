@@ -2031,3 +2031,39 @@ access token 이 만료되어 새로 발급해야 하는 경우 refresh token �
     public key 만 가지고 있으면 위조를 할 수 없기에 공개해도 문제가 없다.
 
 </details>
+
+<details>
+<summary>2026-05-29</summary>
+
+- spring `@Async` 는 `AOP` 기반으로 동작한다.  
+비동기로 처리하려면 반드시 다른 class 에서 구현해야 한다(self-invocation).
+- `Runnable` 이란 thread 가 독립적으로 실행할 수 있는 작업의 단위이다. input, output 도 없다.
+- `DDD, Domain-Driven Design` domain 주도 개발 구조  
+이것은 domain 간 결합을 줄이기 위한 수평적 의존성 끊기이다.  
+만약 User domain 에서 문제가 발생한다면 이를 의존하는 다른 domain 에도 영향을 끼치게 된다.  
+규모가 커지게 되면 domain 을 분리하기 편하다.
+- `Layered Architecture` 의존 방향이 수직이다.  
+이 구조는 controller 가 service 를, service 가 repository 를 참조한다.  
+controller 는 repository 에 변화가 생겨도 이를 몰라도 된다.  
+service 가 달라져도 repository 를 수정할 필요가 없다.
+- Event-Driven Architecture 는 의존성을 끊을 수 있는 방법 중 하나이다(또 다른 방법으로 추상화이며 결합을 낮출 수 있다 또는 Facade pattern).  
+유저 회원 가입 시 user, user_credential 을 생성해야 한다.  
+후자는 auth domain 이므로 domain 간 결합이 존재한다.  
+이를 제거하기 위해 event 기반 구조를 사용하자.  
+user 를 생성했다는 event 를 생성하면 이를 구독하는 auth 에서 받아 처리한다.  
+user 는 auth 의 존재를 모른다.  
+event dto 는 생성하는 쪽에서 소유한다.
+- `DDD` 는 이론적으로? 다른 domain 참조를 금한다.  
+하지만 앞서 ERD 를 만들 때 entity 간 관계를 맺고 있는데 어떻게 참조를 하지 않고 개발할 수 있을까?  
+먼저 User entity 는 유저 프로파일 이미지 때문에 BinaryContent 를 참조한다.  
+이때 User 는 entity 가 아니라 id 를 참조하도록 바꾼다.  
+문제는 데이터 조립인데 controller 에서는 user 와 profile 데이터를 원한다.  
+이렇게 극단적으로 분리하면 controller 에서 user, binary content service 를 참조해야 하고 각 결과물을 controller 에서 조립하게 된다.  
+이것은 책임과 역할 분리가 제대로 안된 것이다.  
+controller 는 request 를 service 에게 넘겨주는 책임을 가진다.  
+하지만 두 service 를 참조해 나온 결과물을 조립하는 것은 business logic 에 대해 알게 되므로 적절하지 않다.  
+그래서 이런 극단적인? 경우 controller - (Facade layer) - service 라는 계층을 추가하면 된다.  
+각 service 에서 나온 결과물을 조립하여 controller 에게 전해주는 역할이다.  
+이러면 domain 간 의존성을 낮출 수 있고 controller 는 business logic 을 몰라도 된다.
+
+</details>

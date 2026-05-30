@@ -2067,3 +2067,115 @@ controller 는 request 를 service 에게 넘겨주는 책임을 가진다.
 이러면 domain 간 의존성을 낮출 수 있고 controller 는 business logic 을 몰라도 된다.
 
 </details>
+
+<details>
+<summary>2026-05-30</summary>
+
+- `Reflection`은 `Runtime` 시 실행된다.  
+java code 는 compiler 에 의해 java bytecode 로 바뀐다.  
+이 때 code optimizing 은 없다. 단순히 jvm 만 읽을 수 있는 byte code로 바꿔준다.  
+interpreter 가 이 byte code 를 읽으며 반복되는 code 가 등장하면 jit 가 os 에 맞도록 기계어로 바꾸고 caching 한다.  
+reflection 은 code 가 실행하기 전까지 무슨 값이 들어오고 반환되는지 모르기 때문에 jit 는 최적화를 포기한다.  
+- `Reflection` 은 왜 느릴까? **권한 검사**를 받아야 한다.  
+runtime 시 `method.invoke(...)` 를 호출하면 jvm 내부 보안 로직을 거쳐야 한다. 이 과정이 복잡하다.  
+- spring proxy 는 어떻게 만들어지나 ?  
+compile 시 proxy class 를 만들 수 있나 ?  
+자바 코드를 빌드(컴파일)하는 시점에는 개발자가 짠 순수 코드만 존재한다.  
+서버가 켜질 때 어떤 설정(application.yml, 환경 변수)이 주입될지 알 수 없다.  
+***실행할 때 --spring.profiles.active=prod 혹은 dev 일지 모른다.***  
+따라서 설정이 확정된 순간은 runtime 이며 이 때 proxy class 에 대한 코드를 작성하여 jvm meta space 에 저장한다.  
+spring 에 내장된 byte code 생성 도구인 `CGLIB` 를 이용하여 생성한다.  
+- `Spring` 과 `SpringBoot`  
+spring 은 bean 등록 시 `dispatcher-servlet.xml` 에 작성해야 했다.  
+필요한 설정들은 복잡한 `.xml` 혹은 방대한 java config 를 작성해야 했다.  
+springboot 는 이 복잡한 설정들을 간소화 시켰다.  
+annotation 만으로 bean 등록할 수 있고 설정도 간편히 할 수 있다.  
+또한 DI, AOP 같은 강력한 기능들을 제공하여 개발에 편리함을 더해주었다.
+- spring DI 에 관하여  
+spring bean 을 생성하기 위해 다른 bean 을 참조할 수 있다.  
+참조하는 bean 이 aop 를 사용한다면 무조건 proxy 객체를 넘겨주고 아니면 원본 객체를 넘겨준다.
+- `@Configuration` 과 `@Bean` 에 대하여  
+springboot 에서 bean 등록에는 2가지 방법을 사용한다.  
+`@Configuration` 을 붙인 class 내 method에 `@Bean` 을 붙여 등록한다.  
+위 방법에 대해 알아본다.  
+`@Configuration` 을 붙이면 `CGLIB` 에 의해 proxy 를 생성한다.  
+아래와 같은 config class 가 있다.  
+```java
+@Configuration
+public class AppConfig {
+
+  @Bean
+  public SomethingProperties somethingProperties() {
+    return new SomethingProperties();
+  }
+
+  @Bean
+  public SomeService someService() {
+    return new SomeService(somethingProperties());
+  }
+}
+```
+runtime 시 위 코드를 `CGLIB` 가 아래와 같이 만든다.  
+```java
+public class AppConfigProxy extends AppConfig {
+    @Override
+    public SomethingProperties jwtProperties() {
+        if (IoC컨테이너에_somethingProperties가_있나?) {
+            return IoC컨테이너에서_꺼내줌;
+        } else {
+          SomethingProperties bean = super.somethingProperties();
+            IoC컨테이너에_저장(bean);
+            return bean;
+        }
+    }
+}
+```
+
+```java
+@Component
+public class AppConfig {
+
+  @Bean
+  public SomethingProperties somethingProperties() { // (1)
+    return new SomethingProperties();
+  }
+
+  @Bean
+  public SomeService someService() {
+    return new SomeService(somethingProperties()); // (2)
+  }
+}
+```
+bean 등록하기 위해 `somethingProperties()` 를 실행한다.  
+`someService()` 도 실행한다.  
+이 때 내부에서 `somethingProperties()` 를 호출하는데 앞서 등록한 bean 을 사용하는 게 아닌 객체가 주입된다.  
+즉 spring container 가 관리하지 않는 유령 객체가 `SomeService()` 에 주입받게 된다.  
+`SomethingProperties` 가 변경 되어도 `SomeService` 에는 변화가 없다.  
+이런 것을 `Lite mode` 라고 하는데 이를 사용하는 목적은 framework 개발이나 극도의 최적화를 위해 사용한다고 한다.  
+- spring aop 에서 proxy 를 만드는 건 springboot 의 기본값인 `CGLIB` 이다.  
+모든 proxy 는 `CGLIB` 에 의해 만들어진다.  
+`@Configuration` 는 proxy 가 생성되는게 아니라 상속을 통해 새로 작성된다.  
+그래서 proxy 가 아니다.  
+aop proxy 는 원본 객체를 내부에 주소값을 가지고 있어서 위임한다.  
+`@Configuration` 처럼 원본 객체를 대신하여 상속한 새로운 클래스만 남기는 annotation 은 없다.  
+이것은 AOP 기술과는 다르다.  
+그리고 원본 없이 proxy 를 만드는 경우가 있다.  
+대표적으로 `@Repository`, `@Scope(...)`, `@Lazy` 가 있다.  
+  - `@Repository`  
+  `JpaRepository` 를 상속 받으면 구현체를 `Hibernate`가 만들어 주는 줄 알았다.  
+  상속 받으면 `JDK Dynamic Proxy` 라는 `java.lang.reflect.Proxy` 순수 java 내장 library 가 이 interface 에 대한 proxy 를 만들어 준다.  
+  이 proxy library 는 `CGLIB` 이전에 많이 사용했다.  
+  오직 interface 만 proxy 를 만들 수 있다.  
+  여튼 실질적인 기능을 하는 원본은 `SimpleJpaRepository` 이다.  
+  이건 spring data jpa 가 미리 만들었다.  
+  앞선 dynamic proxy 가 만든 proxy 에 위 클래스를 연결한다.  
+  그리고 query 를 보낼 때 `Hibernate` 에게 위임한다.
+  - `@Scope(...)`  
+  bean 생성 주기가 다른 경우에 활용할 수 있다.  
+  예를 들어 bean 중에는 http session 생성마다 생성되는 bean 이 있을 수 있다.  
+  이 초기 bean 등록 시 위 bean 을 참조한다면 `ScopeNotActiveException` 가 발생되어 앱이 종료한다.  
+  이 문제를 해결하기 위해 proxy 를 만들어 준다.  
+  - `@Lazy`  
+  생성 비용이 비싸 필요할 때 생성되도록 지연하는 bean 에 사용된다.
+
+</details>

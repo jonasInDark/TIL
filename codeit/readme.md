@@ -2179,3 +2179,29 @@ aop proxy 는 원본 객체를 내부에 주소값을 가지고 있어서 위임
   생성 비용이 비싸 필요할 때 생성되도록 지연하는 bean 에 사용된다.
 
 </details>
+
+<details>
+<summary>2026-05-31</summary>
+
+- `DDD, Domain-Drive Develop` domain 기반 개발에 대하여.  
+`DDD` 는 domain 간 분리를 통해 의존성을 낮추고 응집도를 높힐 수 있다.  
+strict `DDD` 는 다른 domain 을 참조하지 않는다.  
+예를 들어 다른 domain 의 entity 가 아닌 id 를 참조한다.  
+의존성을 없앨 수 있어 서비스 규모가 커지면 따로 분리하기 좋다.  
+하지만 id 만 참조하게 되면 나중에 데이터 조립 과정이 필요하다.  
+외부 기술로 부터 100% 격리하기 위해 추가적인 과정이 필요하여 생산성이 떨어진다.  
+- `Pragmatic DDD` 좀 더 유연한 `DDD`.  
+외부 기술로 부터 완전히 격리한다는 건 특정 기술에 의존하지 않아 확정이 자유롭다.  
+하지만 jpa 를 대신할 기술이 있을까? 가까운 미래에 우리가 이걸 다른 것으로 대체할 것인가 ?  
+라는 질문을 한다면 NO.  
+강력한 표준 기술은 포함하되, 비즈니스 로직의 응집도와 의존성 방향은 철저하게 지키자는 것이 `실용적 DDD` 이다.  
+- `global` vs `common`
+  - 전자는 특정 business 와 무관한 앱의 infra 에 대한 소스를 모아둔 package 이다.
+    - `@Configuration`, `@ResControllerAdvice`, filter, AOP 등.
+  - 후자는 모든 domain 이 가져다 쓰는 business skeleton 이다.
+    - entity super class, global base exception, 공통 utils ...
+  - 의존성 방향은 domain 은 common, global 을 참조할 수 있다.  
+  global 또한 common 을 참조할 수 있다.  
+  common 은 domain, global 을 몰라야 한다.
+
+</details>

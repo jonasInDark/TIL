@@ -2205,3 +2205,78 @@ strict `DDD` 는 다른 domain 을 참조하지 않는다.
   common 은 domain, global 을 몰라야 한다.
 
 </details>
+
+<details>
+<summary>2026-06-05</summary>
+
+- `SpringBoot` 이전과 이후 비교
+  - 이전에는 war 를 만들고 servlet container 위에서 동작했다. 지금은 jar 내에 embedded tomcat 이 포함되어 단독으로 실행 가능하다.
+  - 이전에는 servlet container 가 먼저 생성되서 filter 를 spring container 에 등록할 수 없었다.  
+  이를 하기 위해 `DelegatingFilterProxy` 를 이용하는 복잡한 방법을 사용해야 했다.
+  - 지금은 servlet container 보다 spring context(`ServletWebServerApplicationContext`) 가 먼저 생성된다.  
+  servlet filter 라도 bean 으로 등록할 수 있다.  
+  embedded tomcat 을 객체로 생성하여 filter 들을 주입해줄 수 있다.
+- `Spring Container` vs `Spring Context`
+  - 전자는 bean 의 life-cycle, DI 담당하는 순수한 핵심 코어 엔진이며 `BeanFactory` 이다.
+  - 후자는 `BeanFactory` 를 상속받아 app 개발에 필요한 여러 기능을 포함하는 거대한 시스템.  
+  `ApplicationContext` 이며 `BeanFactory` 를 상속한다.
+- `Pragmatic DDD` 는 다른 domain 참조를 허용한다.  
+다만 `무엇을` 참조하느냐에 따라 달려있다.  
+현재 나는 `Auth` domain 의 service 에서 `UserRepository` 를 참조하고 있다.  
+`Auth` domain 이 `User` jpa entity 구조를 알아야 한다.  
+이것은 캡슐화를 파괴하고 결합도를 높히게 된다.  
+이를 해결하기 위해 `DIP` 를 이용하자.  
+```java
+public interface AuthUserProvider {
+  void doSomething();
+}
+
+public class AuthService {
+  private final AuthUserProvider authUserProvider;
+  // ...
+}
+
+public class UserProvider implements AuthUserProvider {
+  // ...
+}
+
+```
+이 방법을 사용하면 다른 domain 에서 User 를 조회할 때 interface 를 정의하고 UserProvider 에 구현하면 된다.  
+즉 `ISP, Interface Segregation Principle` 을 따르는 구조가 된다.
+- `UserRepository` 는 User domain 을 위한 CRUD를 구현해야 한다.  
+만약 다른 domain 에서 사용할 query 를 같이 구현한다면 `SRP, Single Responsibility Principle` 이 깨진다는 의미이다.  
+따라서 다른 domain 을 위한 repository 를 따로 만들면 좋다.  
+앞서 설명한 `UserProvider` 를 이용하거나 좀 더 복잡한 query 가 필요하면 `QDSL`을 구현하자.
+이걸 `CQRS, Command and Query Responsibility Segregation` pattern 이라 한다.
+- layered architecture 의 핵심 장점은 단방향 의존성을 통한 관심사 분리이다.  
+하위 계층에 대한 캡슐화와 추상화를 통해 각 계층은 자신의 역할에만 집중할 수 있어서 전반적인 결합도를 낮추고 응집도를 높인다.
+
+</details>
+
+<details>
+<summary>2026-06-08</summary>
+
+- User domain 의 service 구현 시 다른 domain 의 repository 를 참조했었다.  
+다른 domain repository 를 주입받는다는 것은 객체 지향의 캡슐화를 무시하고 타 domain 의 DB 에 접근할 수 있다.  
+이는 module 간 경계를 무너뜨리는 anti-pattern 이다.  
+이를 해결하기 위해 interface 를 이용한 `DIP` 를 적용했다.  
+User domain 은 타 domain 이 어떻게 저장되고 영속화되는지 전혀 알 필요가 없고 추상적인 reference 혹은 interface 에 의존하게 했다.  
+그 결과 타 domain 의 변화는 User domain 에 영향을 끼치지 않게 되는 `OCP` 를 달성했다.  
+의존성이 단방향으로 정리되어 monolithic -> msa 로 분리하기 용이할 수 있는 유연성을 확보했다.
+- layered architecture 에서 pragmatic DDD 로 전환.  
+app 기능 개발에 따라 계층형 구조의 한계를 느꼈다.  
+controller -> service -> repository 라는 계층 분리로 역할과 책임의 분리는 유지했으나 service logic 이 점차 비대해졌다.  
+위 계층 어디에도 속하지 않는 logic 이 생겼다.  
+가장 큰 문제는 domain 간 경계가 불분명 했다.  
+`UserService` 을 비롯한 service 가 다른 domain repository 를 주입받는 등 캡슐화가 파괴 되었다.  
+또한 `User` 는 `UserStatus` 를 참조하고 있었다.  
+기능 개발에 의해 `UserStatus` 가 대체 되었는데 단순히 entity 삭제가 아닌 `UserService` 의 전반적인 logic 을 수정해야 했다.  
+이를 통해 domain 간 강한 결합을 느꼈다.  
+따라서 다른 domain 의 변경에 강건하도록 `DDD` 로 전환하였다.  
+핵심이 되는 `User`, `Auth` domain 을 rich entity model 로 하여 객체가 상태를 결정하도록 캡슐화 했다.  
+다른 domain 의 데이터가 필요한 경우 `DIP` 를 적용해 결합도를 끊었다.  
+또한 `write` 를 금지하고 오직 `read` 만 하도록 했다.  
+strict DDD 는 현 상황에서는 적합하지 않다고 판단했다.  
+entity 가 아닌 id 를 참조하는 entity model 은 현 상황에서 생산성이 떨어지므로 참조 관계는 유지했다.
+
+</details>

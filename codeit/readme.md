@@ -2280,3 +2280,19 @@ strict DDD 는 현 상황에서는 적합하지 않다고 판단했다.
 entity 가 아닌 id 를 참조하는 entity model 은 현 상황에서 생산성이 떨어지므로 참조 관계는 유지했다.
 
 </details>
+
+<details>
+<summary>2026-06-10</summary>
+
+- `Webhook` 은 server 간 실시간 단방향 통신을 말한다.  
+특정 이벤트가 발생했을 때 다른 server 로 push 한다.  
+일반적으로 api 요청하여 데이터를 가져오는 방식과 반대로서 reverse api 라고도 한다.
+- lazy loading 에 의해 proxy 객체를 가져온 경우 id 조회는 가능하다.  
+그 외의 값을 가져오려고 한다면 select query 가 발생한다.  
+jpa buddy 에 의해 생성된 equals, hashcode 는 select query 를 발생시키지 않는다.  
+부모 객체는 자식 객체를 lazy loading 에 의해 proxy 객체로 갖고 있다.  
+`orphanRemoval = true` 인 proxy 자식 객체가 다른 객체로 교체된다면 설정에 의해 기존 객체는 삭제된다.  
+이 때 delete query 가 발생하는데 select query 는 생성되지 않는다.  
+jpa 는 proxy 가 id 를 갖고 있다는 것을 알기에 불필요한 select query 가 발생하지 않는다.
+
+</details>

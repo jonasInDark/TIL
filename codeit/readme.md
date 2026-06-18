@@ -2296,3 +2296,29 @@ jpa buddy 에 의해 생성된 equals, hashcode 는 select query 를 발생시�
 jpa 는 proxy 가 id 를 갖고 있다는 것을 알기에 불필요한 select query 가 발생하지 않는다.
 
 </details>
+
+<details>
+<summary>2026-06-18</summary>
+
+- WebSocket 연결할 때 주의사항.  
+ws 연결 요청에는 http 요청을 보내는데 이 때 access token 같은 인증 정보를 담아 보낼 수 없다.  
+이는 브라우저가 막아놓은 것이다.  
+따라서 security 설정에 의해 ws upgrade 요청은 막히게 되므로 예외로 등록해야 한다.
+- stomp url 전략에 대해.  
+`/pub` 은 client -> server, `/sub` 은 server -> client.  
+전자는 controller 에 `@MessageMapping` 붙은 handler method 가 전달 받고 `@SendTo`로 보낸다.  
+url 을 정의할 때 크게 2가지를 고려한다.  
+**모든 유저가 알아야 하는 사항인가** vs **일부 유저**
+  - 전자의 url 예시로 `/sub/channels`
+    - 모든 유저에게 공개 채널을 알려야 한다.
+  - 후자는 `/sub/users/{id}/notifications`
+    - 개인적인 알림은 특정 유저만 알아야 한다.
+- 전역적인 메세지를 세분화하여 보낼 때 부작용.  
+예를 들어 모두에게 보내는 알림 메세지를 전역적으로 1번 보내면 되는데 모든 유저 N명에게 보낸다면  
+N번의 반복문으로 N개의 메세지를 생성하고 broker 에게 N번 전송 명령을 내려야 하고 out-bound traffic 이 급증한다.
+- 세분화하여 보낼 메세지를 전역적으로 보내고 front 에서 filtering 을 할 때 부작용.  
+특정 유저에게 보내는 메세지를 전역 채널로 보낸다면 front 에서 이를 filtering 해야 한다.  
+백그라운드에서는 계속 자원을 소모하게 된다.  
+만약 개인 정보가 담긴 메세지를 받는다면 보안에 치명적이다.
+
+</details>

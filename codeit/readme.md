@@ -2322,3 +2322,52 @@ N번의 반복문으로 N개의 메세지를 생성하고 broker 에게 N번 전
 만약 개인 정보가 담긴 메세지를 받는다면 보안에 치명적이다.
 
 </details>
+
+<details>
+<summary>2026-06-23</summary>
+
+- `ConcurrentHashMap` 동작 원리.  
+이름을 보면 알 수 있듯, thread-safe hash map 이다.  
+먼저 `Map` 내부에는 array 로 이루어진 `Bucket` 이라는 공간이 있다.  
+```index = hash % array.size``` index 와 bucket 은 대응된다.  
+다른 hash 값이어도 동일한 bucket 에 할당될 수 있다.  
+그래서 같은 bucket 에 배정되면 단일 `LinkedList` 처럼 데이터를 저장한다.  
+key 가 완전히 동일하면 덮어쓴다.  
+`ConcurrentHashMap` 은 조회 시 lock을 걸지 않는다.  
+`Map` 에는 hash 충돌 시 다음 노드를 가리키는 pointer 가 있다.  
+이 pointer 에 `volatile` 을 적용한다.  
+pointer 의 값은 다음 노드를 가리키는 주소이다.  
+멀티 스레딩 환경에서 아직 업데이트 하지 않은 pointer 값을 가질 수 있다.  
+pointer 를 최신값으로 가져와도 저장되어 있는 값이 최신이 아닐 수 있다.  
+따라서 pointer 가 가리키는 node 내부에도 volatile을 선언했다.  
+이런 node 들이 저장된 bucket은 배열인데 volatile 을 선언했다.  
+배열 자체에 volatile 이 적용되지만 배열이 가지고 있는 값들은 volatile 에 의해 최신 상태를 보장 못한다.  
+이를 보완하기 위해 cash 를 무시하고 `getObjectVolatile(table, ptr)` 을 실행한다.  
+이것은 배열의 N번째 주소를 가리키면 cash 를 무시하고 ram 에서 데이터를 읽는다.
+- `volatile` 은 강제로 최신 데이터를 가져오도록 한다.  
+cpu 에는 L1, L2, L3 cash 가 있다.  
+원하는 데이터가 cash 에 있다면 ram 으로 데이터 조회하지 않고 갖다 쓴다.  
+즉 ram 에 저장된 데이터가 최신화가 안될 수 있다.  
+`volatile` 은 cash 를 비우고 무조건 데이터를 읽을 때 ram 에서 가져오도록 한다.
+- `List` 에는 왜 `ConcurrentList` 가 없을까?  
+`List` 는 순서가 중요하다.  
+N번째 데이터를 삭제 혹은 추가를 한다면 N+1번째 이후 데이터가 움직여야 한다.  
+이 때 N보다 큰 K번째 데이터를 읽는다고 하면 문제가 생긴다.  
+따라서 특정칸의 데이터에 lock 을 건다는 개념이 없고 List 전체에 락을 걸어야 한다.  
+이러면 성능이 매우 하락하게 된다.  
+데이터의 쓰기/삭제를 원활하게 하기 위해 `LinkedList` 를 쓴다고 해보자.  
+N번째 데이터를 읽으려면 `O(N)`의 시간 복잡도가 있고 읽는 도중 lock 없이 추가 삭제를 한다면 문제가 발생할 것이다.  
+그럼 N번째 데이터까지 lock 을 걸면 성능이 처참해진다.  
+정리하면 순서를 보장하면서 완벽한 concurrent 를 제공하는 건 구조적으로 불가능하거나 성능이 처참하다.  
+애초에 멀티 스레드 환경에서 list 를 쓴다는 건 추가/삭제는 별로 없고 배열 순회가 많은 경우에 사용하기 위함이다.
+- `Map` 은 내부에 `HashTable` 이라는 배열을 가지고 있다.  
+이 배열은 sparse 하다.  
+`Map` 은 순회할 때 배열 전체를 살펴봐야 한다.  
+대부분 빈 공간이라 배열 전체를 살펴보면서 값이 있는지 확인해야 한다.
+- `LinkedHashMap` 은 `Map` 과 `Linked` 를 합친 자료구조이다.  
+`Map` 처럼 sparse table 을 가지고 있다.  
+차이는 데이터 끼리 연결(linked)되어 있어 순회하는데 빠르다.  
+즉, 전제 table 을 순회하지 않고 첫번째 데이터가 다음 데이터의 위치를 알고 있어 저장된 데이터 갯수만큼 순회한다.  
+입력한 key 의 순서 보장이 중요하고 순회하는 경우가 있다면 사용하기 적합하다.
+
+</details>

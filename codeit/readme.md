@@ -1,3 +1,4 @@
+
 ## 코드잇(codeit) backend-10
 
 - 기간: 2025-12-30 ~
@@ -2369,5 +2370,26 @@ N번째 데이터를 읽으려면 `O(N)`의 시간 복잡도가 있고 읽는 �
 차이는 데이터 끼리 연결(linked)되어 있어 순회하는데 빠르다.  
 즉, 전제 table 을 순회하지 않고 첫번째 데이터가 다음 데이터의 위치를 알고 있어 저장된 데이터 갯수만큼 순회한다.  
 입력한 key 의 순서 보장이 중요하고 순회하는 경우가 있다면 사용하기 적합하다.
+
+</details>
+
+<details>
+<summary>2026-06-27</summary>
+
+- Websocket 로 보내는 message 의 흐름.  
+handshake 이후 `WebSocket Frame(RFC 6455)` 라는 새로운 스펙에 맞춰 바이트를 조립해 통신한다.  
+tomcat 은 TCP 에게 받은 `WebSocket Frame` 을 java websocket(`javax.websocket.Session`)으로 만들어 spring 에게 넘긴다.  
+tomcat 은 http 를 parsing 하는 servlet container 역할뿐만 아니라 websocket frame decoder 역할도 하고 있다.  
+message 흐름 정리
+TCP -> WebSocket handler -> client in-bound channel -> (channel interceptor) -> message broker -> controller with `@MessageMapping`  
+- `@Controller` vs `@RestController`
+  - 전자는 반환값이 view(html), 후자는 데이터(json)이다.
+  - 그래서 전자는 반환값이 view 이름이다.  
+    - 예를 들어 반환값이 `userList` 라면 `userList.html` 을 의미한다.
+    - 만약 순수 데이터를 반환하려면 handler method 에 `@ResponseBody`를 붙여야 한다.
+  - 후자는 `@Controller` + `@ResponseBody` 이다.
+  - 반환하는 데이터는 `HttpMessageConverter` 가 json 으로 변환해준다.
+  - `@RestController` 의 반환값은 service 에서 반환한 dto 그대로 반환해도 되지만 status code 가 200으로 고정되며 header 를 추가할 수 없다.
+
 
 </details>

